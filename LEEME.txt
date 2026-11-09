@@ -1,0 +1,49 @@
+DIANA SCORE - APP INSTALABLE Y SIN CONEXION
+===========================================
+
+Esta carpeta contiene la app completa como PWA (aplicacion web instalable).
+Lo que incluye: index.html (la app), manifest.webmanifest, sw.js (el que la
+hace funcionar sin conexion), la carpeta icons y los archivos del servidor local.
+
+-------------------------------------------------------------------
+1) INSTALARLA EN EL ORDENADOR (Windows, Chrome o Edge)  -> sin conexion
+-------------------------------------------------------------------
+1. Descomprime esta carpeta donde quieras (no la abras desde dentro del ZIP).
+2. Doble clic en Iniciar.bat. Se abre una ventana negra (el servidor) y el
+   navegador en http://localhost:8411 (u otro puerto libre).
+3. En la barra de direcciones aparece un icono de "Instalar" (un monitor con
+   una flecha). Pulsalo, o ve a menu > Instalar Diana Score.
+4. Ya tienes Diana Score como app en el ordenador, con su icono. Una vez
+   instalada, funciona aunque cierres el servidor y aunque no tengas internet.
+
+-------------------------------------------------------------------
+2) INSTALARLA EN EL MOVIL (Android o iPhone)  -> sin conexion
+-------------------------------------------------------------------
+Para que el movil la guarde y funcione sin cobertura, los archivos tienen que
+estar en una direccion de internet "https". Es un paso que hay que hacer una vez.
+La forma mas sencilla y gratuita:
+
+  - GitHub Pages, Netlify o Cloudflare Pages: subes esta carpeta y te dan una
+    direccion https (por ejemplo https://diana-score.tuusuario.dev).
+
+Con esa direccion:
+  - Android (Chrome): abrela, menu (3 puntos) > "Anadir a pantalla de inicio" o
+    "Instalar aplicacion".
+  - iPhone (Safari): abrela, boton Compartir > "Anadir a pantalla de inicio".
+
+A partir de ahi se abre como una app, a pantalla completa, y funciona sin
+conexion en la linea de tiro.
+
+Dime por cual te decides y te guio paso a paso para dejarla colgada.
+
+-------------------------------------------------------------------
+NOTAS
+-------------------------------------------------------------------
+- La version que tienes en claude.ai se puede "Anadir a inicio" para probarla,
+  pero esa necesita conexion para cargar. La instalacion sin conexion de verdad
+  es la de esta carpeta (ordenador) o la alojada en https (movil).
+- Tus tiradas se guardan en cada dispositivo. Para pasarlas de uno a otro, usa
+  Ajustes > Exportar / Importar.
+- Cuando saque mejoras (Fase 2, etc.), te paso la carpeta actualizada; en el
+  ordenador basta con reinstalar, y en el movil se actualiza sola al abrirla
+  con conexion.

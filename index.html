@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Diana Score — registro de tiro con arco</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10140f">
+<meta name="description" content="Registro personal de tiro con arco, flecha a flecha. Funciona sin conexión.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diana Score">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='49' fill='%23edeee8' stroke='%23aab19f' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='40' fill='%231b1f17'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%232f7fe1'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%23e1452f'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23f6c344'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#10140f; --surface:#1a1f17; --surface2:#232a1f; --surface3:#2c3527;
+    --text:#eef2e9; --muted:#9aa893; --accent:#e0a92e; --accent-ink:#1a1405;
+    --green:#5a9a47; --line:#2f3a28; --danger:#d9553f; --radio:14px;
+    --oro:#f6c344; --rojo:#e1452f; --azul:#2f7fe1; --negro:#20241b; --blanco:#edeee8; --fallo:#5b6552;
+    --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-tap-highlight-color:transparent; overscroll-behavior:none;
+  }
+  #app{min-height:100%; display:flex; flex-direction:column}
+  button{font-family:inherit; cursor:pointer; border:none; color:inherit; background:none}
+  input,select{font-family:inherit; font-size:1rem}
+  .oculto{display:none !important}
+
+  /* Cabecera */
+  header{
+    display:flex; align-items:center; gap:10px;
+    padding:calc(10px + var(--safe-top)) 14px 10px; background:var(--surface);
+    border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5;
+  }
+  .marca{display:flex; align-items:center; gap:9px; font-weight:800; font-size:1.15rem; letter-spacing:.3px}
+  .marca .punto{width:22px; height:22px; border-radius:50%;
+    background:radial-gradient(circle,#10140f 0 22%,var(--rojo) 22% 46%,var(--oro) 46% 100%); flex:0 0 auto}
+  .marca b{color:var(--accent)}
+  header .sep{flex:1}
+  .icono-btn{width:40px; height:40px; border-radius:11px; background:var(--surface2);
+    display:grid; place-items:center; font-size:1.1rem; border:1px solid var(--line)}
+  .icono-btn:active{background:var(--surface3)}
+
+  main{flex:1; width:100%; max-width:720px; margin:0 auto; padding:14px 14px calc(96px + var(--safe-bot)); width:100%}
+
+  h2{margin:0 0 2px; font-size:1.3rem}
+  .sub{color:var(--muted); font-size:.9rem; margin:0 0 14px}
+  .tarjeta{background:var(--surface); border:1px solid var(--line); border-radius:var(--radio); padding:14px; margin-bottom:12px}
+  .fila{display:flex; align-items:center; gap:10px}
+  .muted{color:var(--muted)}
+  label{display:block; font-size:.85rem; color:var(--muted); margin-bottom:5px}
+  .campo{margin-bottom:14px}
+  select,input[type=text],input[type=date],input[type=number]{
+    width:100%; background:var(--surface2); color:var(--text); border:1px solid var(--line);
+    border-radius:10px; padding:11px 12px; min-height:44px}
+
+  /* Segmentos */
+  .segmentos{display:grid; gap:6px; grid-auto-flow:column; grid-auto-columns:1fr; background:var(--surface2);
+    border:1px solid var(--line); border-radius:12px; padding:4px}
+  .segmentos.wrap{grid-auto-flow:row; grid-template-columns:repeat(2,1fr)}
+  .segmentos button{padding:10px 6px; border-radius:9px; font-weight:600; color:var(--muted); font-size:.95rem}
+  .segmentos button[aria-pressed=true]{background:var(--accent); color:var(--accent-ink)}
+
+  .boton{display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    background:var(--accent); color:var(--accent-ink); font-weight:800; font-size:1.05rem;
+    padding:14px; border-radius:12px; min-height:52px}
+  .boton:active{filter:brightness(.94)}
+  .boton.sec{background:var(--surface2); color:var(--text); border:1px solid var(--line); font-weight:700}
+  .boton.peligro{background:transparent; color:var(--danger); border:1px solid var(--danger)}
+  .boton.chico{width:auto; padding:10px 16px; font-size:.95rem; min-height:44px}
+
+  /* FAB */
+  .fab{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(18px + var(--safe-bot));
+    width:min(520px,calc(100% - 28px)); z-index:6; box-shadow:0 8px 28px #0008}
+
+  /* Histórico */
+  .vacio{text-align:center; padding:40px 16px; color:var(--muted)}
+  .vacio .gran{font-size:2.6rem; margin-bottom:8px}
+  .resumen{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px}
+  .resumen .caja{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center}
+  .resumen .n{font-size:1.5rem; font-weight:800}
+  .resumen .et{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.4px}
+  .tirada-item{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; padding:13px 14px; margin-bottom:10px}
+  .tirada-item:active{background:var(--surface2)}
+  .tirada-item.sel{border-color:var(--accent); background:var(--surface2)}
+  .check{width:26px; height:26px; border-radius:50%; border:2px solid var(--line); flex:0 0 auto; display:grid; place-items:center;
+    color:var(--accent-ink); font-weight:800; font-size:.85rem}
+  .check.on{background:var(--accent); border-color:var(--accent)}
+  .tirada-item .l1{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+  .tirada-item .fecha{font-weight:700}
+  .tirada-item .disc{color:var(--muted); font-size:.9rem}
+  .pill{margin-left:auto; font-size:.72rem; padding:3px 9px; border-radius:999px; background:var(--surface3); color:var(--muted)}
+  .pill.comp{background:var(--accent); color:var(--accent-ink)}
+  .tirada-item .l2{display:flex; align-items:baseline; gap:6px; margin-top:6px}
+  .tirada-item .total{font-size:1.5rem; font-weight:800}
+  .tirada-item .med{color:var(--muted); font-size:.85rem}
+
+  /* Arqueros patrulla */
+  .arquero-fila{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+  .arquero-fila input{flex:1}
+  .arquero-fila .quitar{width:44px; height:44px; flex:0 0 auto; border-radius:10px; background:var(--surface2);
+    border:1px solid var(--line); color:var(--danger); font-size:1.2rem}
+
+  /* Puntuación */
+  .cab-tirada{position:sticky; top:0; z-index:4; background:var(--surface); border-bottom:1px solid var(--line);
+    padding:calc(8px + var(--safe-top)) 14px 8px; display:flex; align-items:center; gap:10px}
+  .cab-tirada .ctx{font-size:.82rem; color:var(--muted)}
+  .cab-tirada .ti{font-weight:800}
+  .tabs-arq{display:flex; gap:6px; overflow:auto; padding:10px 14px 0}
+  .tabs-arq button{white-space:nowrap; padding:8px 12px; border-radius:999px; background:var(--surface2);
+    border:1px solid var(--line); color:var(--muted); font-weight:600; font-size:.9rem}
+  .tabs-arq button[aria-pressed=true]{background:var(--surface3); color:var(--text); border-color:var(--accent)}
+  .tabs-arq button .pt{color:var(--accent); font-weight:800; margin-left:5px}
+
+  .slots{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:14px}
+  .slot{width:52px; height:60px; border-radius:11px; border:2px dashed var(--line); display:grid; place-items:center;
+    font-size:1.3rem; font-weight:800; background:var(--surface)}
+  .slot.lleno{border-style:solid}
+  .slot.activo{border-color:var(--accent); box-shadow:0 0 0 2px #e0a92e55}
+  .slot .sub{font-size:.6rem; color:var(--muted); font-weight:600}
+
+  .marcador{display:flex; justify-content:space-between; align-items:center; padding:0 16px 6px}
+  .marcador .big{font-size:2rem; font-weight:800}
+  .marcador .x{color:var(--accent); font-weight:700; font-size:1rem}
+
+  .teclado{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:0 14px}
+  .tecla{height:58px; border-radius:12px; font-size:1.3rem; font-weight:800; background:var(--surface2);
+    border:1px solid var(--line); color:var(--text)}
+  .tecla:active{filter:brightness(1.15)}
+  .tecla.oro{background:var(--oro); color:#3a2c00; border-color:#0000}
+  .tecla.rojo{background:var(--rojo); color:#fff; border-color:#0000}
+  .tecla.azul{background:var(--azul); color:#fff; border-color:#0000}
+  .tecla.negro{background:var(--negro); color:#fff}
+  .tecla.blanco{background:var(--blanco); color:#222; border-color:#0000}
+  .tecla.fallo{background:#3a2420; color:#f0b4a6}
+  .tecla.util{background:var(--surface3); color:var(--muted); font-size:1.05rem}
+
+  .diana-wrap{display:grid; place-items:center; padding:6px 14px}
+  .diana-wrap svg{width:min(78vw,340px); height:auto; touch-action:none; border-radius:50%}
+
+  .barra-inf{position:fixed; left:0; right:0; bottom:0; padding:10px 14px calc(10px + var(--safe-bot));
+    background:linear-gradient(to top,var(--bg) 60%,#10140f00); display:flex; gap:10px; max-width:720px; margin:0 auto}
+
+  /* Detalle */
+  table{width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums}
+  th,td{text-align:right; padding:7px 4px; border-top:1px solid var(--line); font-size:.9rem}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--muted); font-weight:600; border-top:none}
+  .toast{position:fixed; left:50%; bottom:calc(84px + var(--safe-bot)); transform:translateX(-50%);
+    background:var(--surface3); border:1px solid var(--line); color:var(--text); padding:11px 16px; border-radius:11px;
+    font-size:.9rem; z-index:20; box-shadow:0 6px 20px #0007; max-width:90%}
+  .chip-val{display:inline-grid; place-items:center; min-width:26px; height:26px; padding:0 4px; border-radius:7px;
+    font-weight:800; font-size:.8rem; margin:2px}
+  /* Portada */
+  .portada-logo{display:grid; place-items:center; padding:10px 0 6px}
+  .saludo{text-align:center; margin:0 0 6px}
+  .saludo h2{font-size:1.5rem; margin:0}
+  .rejilla{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+  .tile{display:flex; flex-direction:column; gap:3px; background:var(--surface); border:1px solid var(--line);
+    border-radius:14px; padding:14px; text-align:left; min-height:96px; align-items:flex-start}
+  .tile:active{background:var(--surface2)}
+  .tile .ic{font-size:1.5rem; line-height:1}
+  .tile .t{font-weight:700; margin-top:4px}
+  .tile .d{font-size:.78rem; color:var(--muted)}
+  .tile.prox{opacity:.65}
+  .tile .badge{font-size:.6rem; text-transform:uppercase; letter-spacing:.4px; color:var(--accent); font-weight:800; margin-top:auto; padding-top:4px}
+  .ronda-nota{color:var(--accent); font-weight:700; text-align:center; padding:4px 14px}
+  .chips-dist{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+  .chip-dist{padding:8px 12px; border-radius:999px; background:var(--surface2); border:1px solid var(--line); color:var(--muted); font-weight:600; font-size:.9rem; min-height:40px}
+  .chip-dist[aria-pressed=true]{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+  /* Modal */
+  .velo{position:fixed; inset:0; background:#000a; display:grid; place-items:center; z-index:30; padding:20px}
+  .modal{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; max-width:360px; width:100%}
+  .modal p{margin:0 0 16px; font-size:1.02rem; line-height:1.4}
+  .modal .acc{display:grid; gap:8px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ───────────────────────── Datos y reglas ───────────────────────── */
+// Rondas oficiales RFETA/WA: flechas por tanda, nº de tandas (o dianas) y tamaño de serie.
+const DISC = {
+  SALA:        { nombre:"Sala",       unidad:"Tanda", fpt:3, dist:18,   tandasOficiales:20, tandasSerie:10, valores:["X","10","9","8","7","6","5","4","3","2","1","M"] },
+  AIRE_LIBRE:  { nombre:"Aire libre", unidad:"Tanda", fpt:6, dist:70,   tandasOficiales:12, tandasSerie:6,  valores:["X","10","9","8","7","6","5","4","3","2","1","M"] },
+  CAMPO:       { nombre:"Campo",      unidad:"Diana", fpt:3, dist:null, tandasOficiales:24, tandasSerie:null, valores:["6","5","4","3","2","1","M"] },
+  TRIDIM:      { nombre:"3D",         unidad:"Diana", fpt:2, dist:null, tandasOficiales:24, tandasSerie:null, valores:["11","10","8","5","M"] },
+};
+// Distancias oficiales WA/RFETA por modalidad (campo y 3D son variables por diana)
+const DISTANCIAS = {
+  SALA: [18, 25, 15, 12],
+  AIRE_LIBRE: [70, 60, 50, 40, 30, 25, 20, 18],
+};
+// Modalidades y categorías RFETA
+const MODALIDADES = [["RECURVO","Recurvo"],["COMPUESTO","Compuesto"],["DESNUDO","Desnudo"],["TRADICIONAL","Tradicional"],["LONGBOW","Longbow"]];
+const CATEGORIAS  = [["U15","U15"],["U18","U18"],["U21","U21"],["SENIOR","Senior"],["V50","+50"]];
+function etiqueta(lista,v){ const e=lista.find(x=>x[0]===v); return e?e[1]:v; }
+// Distancia oficial de competición (sala/aire libre) según modalidad y categoría
+function distanciaOficial(disc, mod, cat){
+  if(disc==="SALA") return 18;
+  if(disc!=="AIRE_LIBRE") return null;   // campo y 3D: distancia variable por diana
+  if(mod==="RECURVO")   return cat==="U15"?40 : cat==="U18"?60 : 70;
+  if(mod==="COMPUESTO") return cat==="U15"?40 : 50;
+  if(mod==="DESNUDO")   return 50;
+  return 30;                              // tradicional y longbow
+}
+// Diana oficial según disciplina, modalidad y categoría
+function dianaOficial(disc, mod, cat){
+  if(disc==="SALA"){
+    if(mod==="TRADICIONAL"||mod==="LONGBOW") return "80 cm reducida (al 5)";
+    if(mod==="DESNUDO") return "40 cm completa";
+    return cat==="U15" ? "40 cm completa" : "40 cm triple vertical";
+  }
+  if(disc==="AIRE_LIBRE"){
+    if(mod==="COMPUESTO")  return "80 cm reducida";
+    if(mod==="TRADICIONAL") return "80 cm (de campo)";
+    return "122 cm";                      // recurvo, desnudo, longbow
+  }
+  if(disc==="CAMPO") return "según distancia de cada diana (20–80 cm)";
+  return "siluetas 3D (zonas 11-10-8-5)";
+}
+function descripcionRonda(k){
+  const d=DISC[k];
+  if(k==="SALA") return "Ronda RFETA: 60 flechas · 20 tandas de 3 · 2 series de 30";
+  if(k==="AIRE_LIBRE") return "Ronda RFETA: 72 flechas · 12 tandas de 6 · 2 series de 36";
+  if(k==="CAMPO") return "Recorrido RFETA: 24 dianas · 3 flechas por diana (72)";
+  return "Recorrido RFETA: 24 dianas · 2 flechas por diana (48)";
+}
+// Anillos para "tocar diana": fracción de radio (0 centro → 1 borde), de dentro a fuera.
+const ANILLOS = {
+  SALA:   [["X",.045],["10",.09],["9",.18],["8",.27],["7",.36],["6",.45],["5",.54],["4",.63],["3",.72],["2",.81],["1",.90]],
+  AIRE_LIBRE:[["X",.045],["10",.09],["9",.18],["8",.27],["7",.36],["6",.45],["5",.54],["4",.63],["3",.72],["2",.81],["1",.90]],
+  CAMPO:  [["6",.10],["5",.28],["4",.46],["3",.64],["2",.82],["1",1.0]],
+  TRIDIM: [["11",.08],["10",.22],["8",.52],["5",1.0]],
+};
+function valorNum(v){ return v==="X"?10 : v==="M"?0 : Number(v); }
+function colorClase(v){
+  if(v==="M") return "fallo";
+  if(v==="X") return "oro";
+  const n = Number(v);
+  // 3D y campo tienen escalas propias; mapeo aproximado para el color
+  if(["11"].includes(v)) return "oro";
+  if(n>=9) return "oro";
+  if(n>=7) return "rojo";
+  if(n>=5) return "azul";
+  if(n>=3) return "negro";
+  return "blanco";
+}
+
+/* ───────────────────────── Almacenamiento ───────────────────────── */
+const DB_KEY = "diana.datos.v1";
+let DB = cargar();
+function cargar(){
+  try{ const r = JSON.parse(localStorage.getItem(DB_KEY)); if(r && r.sesiones) return r; }catch(e){}
+  return { perfil:{ nombre:"" }, sesiones:[], sig:1 };
+}
+function guardar(){ try{ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }catch(e){ toast("No se pudo guardar"); } }
+
+/* ───────────────────────── Utilidades ───────────────────────── */
+const $ = (s,el=document)=>el.querySelector(s);
+function h(tag, attrs={}, ...kids){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==="class") e.className=attrs[k];
+    else if(k==="html") e.innerHTML=attrs[k];
+    else if(k.startsWith("on")) e.addEventListener(k.slice(2), attrs[k]);
+    else if(attrs[k]!=null) e.setAttribute(k, attrs[k]);
+  }
+  for(const kid of kids.flat()) if(kid!=null) e.append(kid.nodeType?kid:document.createTextNode(kid));
+  return e;
+}
+let toastT;
+function toast(m){ const t=$("#toast"); t.innerHTML=""; t.append(h("div",{class:"toast"},m)); clearTimeout(toastT); toastT=setTimeout(()=>t.innerHTML="",2200); }
+function modal(msg, botones, cb){
+  const velo=h("div",{class:"velo", onclick:e=>{ if(e.target===velo){ velo.remove(); cb&&cb(null); } }});
+  const acc=h("div",{class:"acc"});
+  for(const b of botones) acc.append(h("button",{class:"boton"+(b.sec?" sec":"")+(b.peligro?" peligro":""),
+    onclick:()=>{ velo.remove(); cb&&cb(b.v); }}, b.t));
+  velo.append(h("div",{class:"modal"}, h("p",{},msg), acc)); document.body.append(velo);
+}
+function confirmar(msg){ return new Promise(res=> modal(msg,[{t:"Aceptar",v:true},{t:"Cancelar",sec:true,v:false}], v=>res(!!v)) ); }
+function fechaCorta(iso){ const d=new Date(iso); return d.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"}); }
+
+function totalArquero(a){ let t=0,f=0,x=0; for(const tanda of a.tandas) for(const fl of tanda){ t+=valorNum(fl); f++; if(fl==="X")x++; } return {t,f,x,media:f?t/f:0}; }
+
+/* ───────────────────────── Rutas / render ───────────────────────── */
+let vista = { nombre:"inicio" };
+let seleccion = new Set();   // ids marcados para eliminar en el histórico
+function ir(v){ vista=v; render(); window.scrollTo(0,0); }
+
+function render(){
+  const app=$("#app"); app.innerHTML="";
+  app.append(cabecera());
+  if(vista.nombre==="inicio") app.append(vistaInicio());
+  else if(vista.nombre==="historico") app.append(vistaHistorico());
+  else if(vista.nombre==="ajustes") app.append(vistaAjustes());
+  else if(vista.nombre==="nueva") app.append(vistaNueva());
+  else if(vista.nombre==="tirada") app.append(vistaTirada());
+  else if(vista.nombre==="detalle") app.append(vistaDetalle());
+}
+
+function cabecera(){
+  if(vista.nombre==="tirada") return document.createComment("");
+  return h("header",{},
+    h("button",{class:"marca", style:"background:none", onclick:()=>ir({nombre:"inicio"})}, logoSVG(24), h("span",{html:"Diana <b>Score</b>"})),
+    h("div",{class:"sep"}),
+    h("button",{class:"icono-btn", title:"Copia de seguridad", onclick:menuDatos}, "⇅"),
+  );
+}
+// Logo: diana reglamentaria de 5 colores y 10 anillos (diseño genérico, sin marcas de federación)
+function logoSVG(px){
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg");
+  svg.setAttribute("viewBox","0 0 100 100"); svg.setAttribute("width",px); svg.setAttribute("height",px); svg.setAttribute("aria-hidden","true");
+  const bandas=[[50,"#edeee8"],[40,"#1b1f17"],[30,"#2f7fe1"],[20,"#e1452f"],[10,"#f6c344"]];
+  for(const [r,c] of bandas){ const ci=document.createElementNS(ns,"circle");
+    ci.setAttribute("cx","50"); ci.setAttribute("cy","50"); ci.setAttribute("r",String(r)); ci.setAttribute("fill",c);
+    if(c==="#edeee8"){ ci.setAttribute("stroke","#aab19f"); ci.setAttribute("stroke-width","1.5"); } svg.append(ci); }
+  for(let r=45;r>0;r-=5){ const ci=document.createElementNS(ns,"circle");
+    ci.setAttribute("cx","50"); ci.setAttribute("cy","50"); ci.setAttribute("r",String(r)); ci.setAttribute("fill","none");
+    ci.setAttribute("stroke", r<=10?"#00000066":"#00000026"); ci.setAttribute("stroke-width","0.7"); svg.append(ci); }
+  return svg;
+}
+
+/* ───────────────────────── Inicio / histórico ───────────────────────── */
+// ── Portada con los menús ──
+function vistaInicio(){
+  const m=h("main",{});
+  const ses = DB.sesiones;
+  m.append(h("div",{class:"portada-logo"}, logoSVG(76)));
+  m.append(h("div",{class:"saludo"},
+    h("h2",{}, DB.perfil.nombre ? ("Hola, "+DB.perfil.nombre) : "Diana Score"),
+    h("div",{class:"sub", style:"margin:4px 0 0"}, "Tu registro de tiro con arco"),
+  ));
+  if(!DB.perfil.nombre){
+    m.append(h("div",{class:"tarjeta"},
+      h("label",{}, "¿Cómo te llamas? (para firmar tus tiradas)"),
+      h("div",{class:"fila"},
+        h("input",{type:"text", id:"nom", placeholder:"Tu nombre"}),
+        h("button",{class:"boton chico", onclick:()=>{ DB.perfil.nombre=$("#nom").value.trim(); guardar(); render(); }}, "Guardar"),
+      )
+    ));
+  }
+  // Resumen
+  let flechas=0, sumaMedia=0, nMed=0;
+  for(const s of ses){ const r=totalArquero(s.arqueros[0]); flechas+=r.f; if(r.f){ sumaMedia+=r.media; nMed++; } }
+  m.append(h("div",{class:"resumen"},
+    caja(ses.length,"Tiradas"), caja(flechas,"Flechas"), caja(nMed?(sumaMedia/nMed).toFixed(2):"—","Media/flecha"),
+  ));
+  m.append(h("button",{class:"boton", onclick:()=>ir({nombre:"nueva"})}, "✛  Nueva tirada"));
+  // Menús
+  const r=h("div",{class:"rejilla"});
+  r.append(tile("📋","Histórico","Tus tiradas guardadas", ()=>ir({nombre:"historico"})));
+  r.append(tile("📊","Estadísticas","Evolución y dispersión", null, "Fase 2"));
+  r.append(tile("🏹","Mi material","Arcos y flechas", null, "Fase 2"));
+  r.append(tile("🎯","Objetivos","Metas y entrenamiento", null, "Fase 3"));
+  r.append(tile("💾","Copia de seguridad","Exportar o importar", menuDatos));
+  r.append(tile("⚙️","Ajustes","Tu nombre y datos", ()=>ir({nombre:"ajustes"})));
+  m.append(r);
+  return m;
+}
+function tile(ic,t,d,onclick,badge){
+  return h("button",{class:"tile"+(onclick?"":" prox"), onclick:onclick||(()=>toast("Disponible en la "+badge))},
+    h("div",{class:"ic"},ic), h("div",{class:"t"},t), h("div",{class:"d"},d),
+    badge?h("div",{class:"badge"},"Próximamente · "+badge):null);
+}
+
+// ── Histórico ──
+function vistaHistorico(){
+  const m=h("main",{});
+  const ses = DB.sesiones.slice().sort((a,b)=> a.fecha<b.fecha?1:-1);
+  const editar = !!vista.editar;
+  m.append(h("div",{class:"fila", style:"margin-bottom:12px; gap:8px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, "Histórico"),
+    ses.length ? h("button",{class:"boton sec chico", onclick:()=>{ vista.editar=!editar; seleccion.clear(); render(); }}, editar?"Hecho":"Editar") : null,
+  ));
+  if(editar && ses.length){
+    m.append(h("div",{class:"fila", style:"gap:8px; margin-bottom:12px"},
+      h("button",{class:"boton sec chico", onclick:()=>{ if(seleccion.size===ses.length) seleccion.clear(); else ses.forEach(s=>seleccion.add(s.id)); render(); }},
+        seleccion.size===ses.length?"Ninguna":"Todas"),
+      h("button",{class:"boton peligro chico", style:"flex:1"+(seleccion.size?"":"; opacity:.5"), onclick:borrarSeleccion}, `Eliminar (${seleccion.size})`),
+    ));
+  }
+  if(!ses.length){
+    m.append(h("div",{class:"vacio"},
+      h("div",{class:"gran"},"🎯"),
+      h("div",{},"Aún no has registrado ninguna tirada."),
+      h("div",{class:"muted", style:"margin-top:6px"},"Pulsa «Nueva tirada» para empezar."),
+    ));
+  } else {
+    for(const s of ses) m.append(itemTirada(s, editar));
+  }
+  if(!editar) m.append(h("button",{class:"boton fab", onclick:()=>ir({nombre:"nueva"})}, "✛  Nueva tirada"));
+  return m;
+}
+
+// ── Ajustes ──
+function vistaAjustes(){
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:12px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0"}, "Ajustes"),
+  ));
+  m.append(h("div",{class:"tarjeta"},
+    h("label",{},"Tu nombre"),
+    h("div",{class:"fila"},
+      h("input",{type:"text", id:"nom2", value:DB.perfil.nombre, placeholder:"Tu nombre"}),
+      h("button",{class:"boton chico", onclick:()=>{ DB.perfil.nombre=$("#nom2").value.trim(); guardar(); toast("Guardado"); }}, "Guardar"),
+    ),
+  ));
+  m.append(h("div",{class:"tarjeta"},
+    h("label",{},"Datos"),
+    h("div",{class:"fila", style:"gap:10px"},
+      h("button",{class:"boton sec chico", onclick:exportar}, "⬇ Exportar"),
+      h("button",{class:"boton sec chico", onclick:importar}, "⬆ Importar"),
+    ),
+    h("div",{style:"height:10px"}),
+    h("button",{class:"boton peligro", onclick:async()=>{ if(await confirmar("Esto borrará TODAS tus tiradas y tu nombre. ¿Seguro?")){ DB={perfil:{nombre:""},sesiones:[],sig:1}; guardar(); ir({nombre:"inicio"}); } }}, "Empezar de cero"),
+  ));
+  m.append(h("div",{class:"sub", style:"text-align:center"}, "Diana Score · versión de pruebas (Fase 1)"));
+  return m;
+}
+function caja(n,et){ return h("div",{class:"caja"}, h("div",{class:"n"}, String(n)), h("div",{class:"et"}, et)); }
+function itemTirada(s, editar){
+  const yo=s.arqueros[0]; const r=totalArquero(yo); const d=DISC[s.disciplina];
+  const sel=seleccion.has(s.id);
+  const onclick = editar
+    ? ()=>{ sel?seleccion.delete(s.id):seleccion.add(s.id); render(); }
+    : ()=>ir({nombre:"detalle", id:s.id});
+  return h("button",{class:"tirada-item"+(editar&&sel?" sel":""), onclick},
+    editar? h("span",{class:"check"+(sel?" on":"")}, sel?"✓":"") : null,
+    h("div",{style:"flex:1; min-width:0"},
+      h("div",{class:"l1"},
+        h("span",{class:"fecha"}, fechaCorta(s.fecha)),
+        h("span",{class:"disc"}, d.nombre + (s.distancia?` · ${s.distancia} m`:"") + (s.arqueros.length>1?` · ${s.arqueros.length} arqueros`:"")),
+        h("span",{class:"pill"+(s.tipoSesion==="COMPETICION"?" comp":"")}, s.tipoSesion==="COMPETICION"?"Competición":"Entrenamiento"),
+      ),
+      h("div",{class:"l2"},
+        h("span",{class:"total"}, String(r.t)), h("span",{class:"med"}, `puntos · ${r.f} flechas · media ${r.media.toFixed(2)}`),
+      ),
+    ),
+  );
+}
+async function borrarSeleccion(){
+  if(!seleccion.size) return;
+  if(await confirmar(`¿Eliminar ${seleccion.size} tirada${seleccion.size>1?"s":""}? No se puede deshacer.`)){
+    DB.sesiones=DB.sesiones.filter(s=>!seleccion.has(s.id)); guardar(); seleccion.clear(); render();
+  }
+}
+
+/* ───────────────────────── Nueva tirada ───────────────────────── */
+let borrador=null;
+function vistaNueva(){
+  if(!borrador) borrador={ disciplina:"SALA", modalidad:DB.perfil.modalidad||"RECURVO", categoria:DB.perfil.categoria||"SENIOR",
+    tipoSesion:"ENTRENAMIENTO", metodo:"botones", distancia:18,
+    arqueros:[{nombre:DB.perfil.nombre||"Yo", yo:true}] };
+  const b=borrador; const d=DISC[b.disciplina];
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:10px"},
+    h("button",{class:"icono-btn", onclick:()=>{borrador=null; ir({nombre:"inicio"});}}, "‹"),
+    h("h2",{style:"margin:0"}, "Nueva tirada"),
+  ));
+
+  m.append(h("div",{class:"tarjeta"},
+    campoSeg("Disciplina", Object.keys(DISC).map(k=>[k,DISC[k].nombre]), b.disciplina, v=>{ b.disciplina=v; b.distancia=distanciaOficial(v,b.modalidad,b.categoria); render(); }, true),
+    campoSeg("Modalidad de arco", MODALIDADES, b.modalidad, v=>{ b.modalidad=v; b.distancia=distanciaOficial(b.disciplina,v,b.categoria); render(); }, true),
+    campoSeg("Categoría", CATEGORIAS, b.categoria, v=>{ b.categoria=v; b.distancia=distanciaOficial(b.disciplina,b.modalidad,v); render(); }, true),
+    campoSeg("Tipo de sesión", [["ENTRENAMIENTO","Entrenamiento"],["COMPETICION","Competición"]], b.tipoSesion, v=>{b.tipoSesion=v; render();}),
+    campoSeg("Cómo puntuar", [["botones","Botones"],["diana","Tocar diana"]], b.metodo, v=>{b.metodo=v; render();}),
+    campoDistancia(b),
+    h("div",{class:"ronda-nota", style:"text-align:left; padding:0"}, "Diana oficial: "+dianaOficial(b.disciplina,b.modalidad,b.categoria)),
+  ));
+  m.append(h("div",{class:"sub", style:"margin-top:-4px"}, descripcionRonda(b.disciplina)));
+
+  // Patrulla
+  const card=h("div",{class:"tarjeta"}, h("label",{},"Arqueros (tú primero)"));
+  b.arqueros.forEach((a,i)=>{
+    card.append(h("div",{class:"arquero-fila"},
+      h("input",{type:"text", value:a.nombre, placeholder:i===0?"Tú":"Nombre", oninput:e=>a.nombre=e.target.value}),
+      i>0 ? h("button",{class:"quitar", onclick:()=>{ b.arqueros.splice(i,1); render(); }}, "×") : h("span",{class:"muted", style:"width:44px;text-align:center"},"tú"),
+    ));
+  });
+  card.append(h("button",{class:"boton sec chico", style:"margin-top:4px", onclick:()=>{ b.arqueros.push({nombre:"", yo:false}); render(); }}, "+ Añadir arquero"));
+  m.append(card);
+
+  m.append(h("button",{class:"boton", onclick:empezarTirada}, "Empezar tirada"));
+  return m;
+}
+function campoDistancia(b){
+  const ofi = DISTANCIAS[b.disciplina];
+  if(!ofi && DISC[b.disciplina].dist===null && b.distancia==null) return null; // campo/3D: distancia variable
+  const cont=h("div",{class:"campo"}, h("label",{},"Distancia"));
+  if(ofi){
+    const chips=h("div",{class:"chips-dist"});
+    for(const mts of ofi) chips.append(h("button",{class:"chip-dist", "aria-pressed":String(b.distancia===mts), onclick:()=>{ b.distancia=mts; render(); }}, mts+" m"));
+    cont.append(chips);
+  }
+  cont.append(h("div",{class:"fila", style:"gap:8px; align-items:center"},
+    h("input",{type:"number", min:"0", inputmode:"numeric", value:b.distancia??"", placeholder:ofi?"otra distancia":"metros",
+      oninput:e=>{ b.distancia = e.target.value?Number(e.target.value):null; }}),
+    h("span",{class:"muted"},"m"),
+  ));
+  return cont;
+}
+function campoSeg(lab, opciones, valor, onsel, wrap){
+  const seg=h("div",{class:"segmentos"+(wrap?" wrap":"")});
+  for(const [v,txt] of opciones) seg.append(h("button",{"aria-pressed":String(v===valor), onclick:()=>onsel(v)}, txt));
+  return h("div",{class:"campo"}, h("label",{},lab), seg);
+}
+function empezarTirada(){
+  const b=borrador; const d=DISC[b.disciplina];
+  const arqueros = b.arqueros.map((a,i)=>({ nombre:(a.nombre||"").trim()|| (i===0?"Yo":`Arquero ${i+1}`), yo:i===0, tandas:[] }));
+  const s={ id:DB.sig++, fecha:new Date().toISOString(), disciplina:b.disciplina, tipoSesion:b.tipoSesion,
+    modalidad:b.modalidad, categoria:b.categoria, diana:dianaOficial(b.disciplina,b.modalidad,b.categoria),
+    metodo:b.metodo, distancia:b.distancia, fpt:d.fpt, estado:"EN_CURSO", arqueros };
+  DB.perfil.modalidad=b.modalidad; DB.perfil.categoria=b.categoria;
+  DB.sesiones.push(s); guardar(); borrador=null;
+  ir({nombre:"tirada", id:s.id, arq:0, tanda:[], activo:0});
+}
+
+/* ───────────────────────── Puntuación ───────────────────────── */
+function sesionActual(){ return DB.sesiones.find(s=>s.id===vista.id); }
+function vistaTirada(){
+  const s=sesionActual(); const d=DISC[s.disciplina];
+  const m=h("main",{style:"padding:0; max-width:560px"});
+  vista.tanda = vista.tanda || [];           // flechas de la tanda en curso, por arquero: [[..],[..]]
+  if(!vista.tanda.length) s.arqueros.forEach(()=>vista.tanda.push([]));
+  const arq = vista.arq||0;
+
+  // Cabecera
+  const nTanda = s.arqueros[arq].tandas.length + 1;
+  const numSeries = d.tandasSerie ? Math.ceil(d.tandasOficiales/d.tandasSerie) : null;
+  const serie = d.tandasSerie ? Math.min(numSeries, Math.ceil(nTanda/d.tandasSerie)) : null;
+  let ctx = (d.unidad==="Diana")
+    ? `Diana ${nTanda} de ${d.tandasOficiales}`
+    : `Tanda ${nTanda} de ${d.tandasOficiales}` + (serie?` · Serie ${serie}/${numSeries}`:"");
+  if(s.arqueros.length>1) ctx = s.arqueros[arq].nombre + " · " + ctx;
+  m.append(h("div",{class:"cab-tirada"},
+    h("button",{class:"icono-btn", onclick:salirTirada}, "‹"),
+    h("div",{},
+      h("div",{class:"ti"}, d.nombre + (s.distancia?` · ${s.distancia} m`:"")),
+      h("div",{class:"ctx"}, ctx),
+    ),
+    h("div",{class:"sep", style:"flex:1"}),
+    h("button",{class:"boton chico", onclick:finalizar}, "Finalizar"),
+  ));
+
+  // Tabs de arqueros (patrulla)
+  if(s.arqueros.length>1){
+    const tabs=h("div",{class:"tabs-arq"});
+    s.arqueros.forEach((a,i)=>{
+      const r=totalArquero(a);
+      tabs.append(h("button",{"aria-pressed":String(i===arq), onclick:()=>{ vista.arq=i; vista.activo=vista.tanda[i].length; render(); }},
+        a.nombre, h("span",{class:"pt"}, String(r.t))));
+    });
+    m.append(tabs);
+  }
+
+  // Marcador del arquero activo
+  const r=totalArquero(s.arqueros[arq]);
+  m.append(h("div",{class:"marcador"},
+    h("div",{}, h("span",{class:"big"}, String(r.t)), " ", h("span",{class:"muted"}, "pts")),
+    h("div",{class:"muted"}, `media ${r.media.toFixed(2)}`, valoresDe(s).includes("X")?h("span",{class:"x"}, `  ${r.x} X`):""),
+  ));
+  if(s.arqueros[arq].tandas.length >= d.tandasOficiales){
+    m.append(h("div",{class:"ronda-nota"}, `✓ Ronda RFETA completa · ${r.t} pts · pulsa Finalizar`));
+  }
+
+  // Slots de la tanda en curso
+  const slots=h("div",{class:"slots"});
+  const activo = vista.activo!=null?vista.activo:vista.tanda[arq].length;
+  for(let i=0;i<s.fpt;i++){
+    const val=vista.tanda[arq][i];
+    slots.append(h("div",{class:"slot "+(val!=null?"lleno ":"")+(i===activo?"activo":""),
+      onclick:()=>{ vista.activo=i; render(); }},
+      val!=null?val:"", ));
+  }
+  m.append(slots);
+
+  // Entrada: diana o botones
+  if(s.metodo==="diana") m.append(caraDiana(s));
+  m.append(teclado(s));
+
+  // Reabrir la última tanda guardada (por si se cerró con un error)
+  const sinEmpezar = !vista.tanda[arq].some(v=>v!=null);
+  if(sinEmpezar && s.arqueros[arq].tandas.length){
+    m.append(h("div",{style:"text-align:center; padding:10px 14px 0"},
+      h("button",{class:"boton sec chico", onclick:()=>reabrirTanda(s)}, "↩  Reabrir última tanda")));
+  }
+
+  // Barra inferior: cerrar tanda
+  const completa = vista.tanda[arq].length>=s.fpt && vista.tanda[arq].every(v=>v!=null);
+  m.append(h("div",{class:"barra-inf"},
+    h("button",{class:"boton sec", style:"flex:0 0 46%", onclick:()=>{ borrarUltima(s); }}, "⌫  Borrar"),
+    h("button",{class:"boton", disabled: completa?null:"", style:"flex:1;"+(completa?"":"opacity:.5"),
+      onclick:()=>cerrarTanda(s)}, s.arqueros.length>1?"Guardar y siguiente":"Cerrar tanda"),
+  ));
+  return m;
+}
+
+function meter(s, v, pos){
+  const arq=vista.arq||0;
+  let i = vista.activo!=null?vista.activo:vista.tanda[arq].length;
+  if(i>=s.fpt) i=s.fpt-1; if(i<0) i=0;   // nunca más allá del nº de flechas de la tanda
+  vista.tanda[arq][i]=v;
+  if(pos){ if(!vista.puntos) vista.puntos={}; if(!vista.puntos[arq]) vista.puntos[arq]=[]; vista.puntos[arq][i]=pos; }
+  // siguiente hueco
+  let next=i+1; while(next<s.fpt && vista.tanda[arq][next]!=null) next++;
+  vista.activo = next;
+  render();
+}
+function borrarUltima(s){
+  const arq=vista.arq||0; const a=vista.tanda[arq];
+  // borra el último lleno, y también su marca en la diana
+  for(let i=s.fpt-1;i>=0;i--){ if(a[i]!=null){ a[i]=undefined; if(vista.puntos&&vista.puntos[arq]) vista.puntos[arq][i]=undefined; vista.activo=i; render(); return; } }
+}
+function cerrarTanda(s){
+  const arq=vista.arq||0;
+  const flechas = vista.tanda[arq].slice(0,s.fpt).filter(v=>v!=null);
+  if(flechas.length<s.fpt){ toast("Faltan flechas"); return; }
+  const a=s.arqueros[arq];
+  a.tandas.push(flechas);
+  // En "tocar diana": guardar la posición de cada flecha y limpiar las marcas de la diana
+  if(s.metodo==="diana"){
+    if(!a.posiciones) a.posiciones=[];
+    const pos = (vista.puntos&&vista.puntos[arq]) ? vista.puntos[arq].slice(0,s.fpt).map(p=>p?{x:p.x,y:p.y}:null) : [];
+    a.posiciones.push(pos);
+    if(vista.puntos) vista.puntos[arq]=[];
+  }
+  vista.tanda[arq]=[];
+  guardar();
+  // en patrulla, pasar al siguiente arquero que tenga menos tandas
+  if(s.arqueros.length>1){
+    const min=Math.min(...s.arqueros.map(a=>a.tandas.length));
+    let next=(arq+1)%s.arqueros.length;
+    for(let k=0;k<s.arqueros.length;k++){ const idx=(arq+1+k)%s.arqueros.length; if(s.arqueros[idx].tandas.length===min){ next=idx; break; } }
+    vista.arq=next;
+  }
+  vista.activo=0; render();
+}
+function reabrirTanda(s){
+  const arq=vista.arq||0; const a=s.arqueros[arq];
+  if(vista.tanda[arq].some(v=>v!=null)){ toast("Termina o borra la tanda en curso primero"); return; }
+  if(!a.tandas.length){ toast("No hay tanda anterior"); return; }
+  const ult=a.tandas.pop();
+  vista.tanda[arq]=ult.slice();
+  if(s.metodo==="diana" && a.posiciones && a.posiciones.length){
+    const pos=a.posiciones.pop();
+    if(!vista.puntos) vista.puntos={};
+    vista.puntos[arq]=[]; (pos||[]).forEach((p,i)=>{ if(p) vista.puntos[arq][i]={x:p.x,y:p.y}; });
+  }
+  vista.activo=ult.length-1;
+  guardar(); render();
+}
+function teclado(s){
+  const t=h("div",{class:"teclado"});
+  for(const v of valoresDe(s)){
+    t.append(h("button",{class:"tecla "+colorClase(v), onclick:()=>meter(s,v)}, v));
+  }
+  return t;
+}
+// Valores puntuables según disciplina y modalidad (compuesto en sala: el 10 interior es el 10, sin X)
+function valoresDe(s){
+  let v=DISC[s.disciplina].valores.slice();
+  if(s.disciplina==="SALA" && s.modalidad==="COMPUESTO") v=v.filter(x=>x!=="X");
+  return v;
+}
+// Tipo de cara de diana a dibujar según disciplina y diana oficial seleccionada
+function tipoCara(s){
+  if(s.disciplina==="CAMPO") return "CAMPO";
+  if(s.disciplina==="TRIDIM") return "ANIMAL";
+  const dn=s.diana||"";
+  if(dn.indexOf("triple")>=0) return "TRIPLE";
+  if(dn.indexOf("reducida")>=0) return "REDUCIDA";
+  return "COMPLETA";
+}
+function reescala(anillos, objetivo){ const max=anillos[anillos.length-1][1]; return anillos.map(([v,f])=>[v, f/max*objetivo]); }
+function facesDe(tipo,s){
+  if(tipo==="CAMPO") return [{cx:100,cy:100,R:96,anillos:reescala(ANILLOS.CAMPO,0.98)}];
+  const permit=new Set(valoresDe(s));
+  const base=ANILLOS[s.disciplina].filter(a=>permit.has(a[0]));
+  if(tipo==="REDUCIDA"){ const sub=base.filter(a=>["X","10","9","8","7","6","5"].includes(a[0])); return [{cx:100,cy:100,R:96,anillos:reescala(sub,0.93)}]; }
+  // Triple vertical: un solo visor grande (más fácil de marcar), un toque por flecha
+  if(tipo==="TRIPLE"){ const sub=base.filter(a=>["X","10","9","8","7","6"].includes(a[0])); return [{cx:100,cy:100,R:96,anillos:reescala(sub,0.93)}]; }
+  return [{cx:100,cy:100,R:96,anillos:reescala(base,0.95)}]; // COMPLETA
+}
+function colorCampo(v){ return (v==="6"||v==="5")?"#f6c344":"#20241b"; }
+function dibujarCara(svg,f,tipo){
+  const ns="http://www.w3.org/2000/svg";
+  for(let i=f.anillos.length-1;i>=0;i--){ const [v,frac]=f.anillos[i]; const c=document.createElementNS(ns,"circle");
+    c.setAttribute("cx",f.cx); c.setAttribute("cy",f.cy); c.setAttribute("r",String(frac*f.R));
+    c.setAttribute("fill", tipo==="CAMPO"?colorCampo(v):colorHex(v));
+    c.setAttribute("stroke", tipo==="CAMPO"?"#ffffff55":"#0003"); c.setAttribute("stroke-width", tipo==="CAMPO"?".6":".4");
+    svg.append(c); }
+}
+function dibujarMarcas(svg,arq){
+  const ns="http://www.w3.org/2000/svg";
+  (vista.puntos&&vista.puntos[arq]||[]).forEach(p=>{ if(!p) return;
+    const d=document.createElementNS(ns,"circle"); d.setAttribute("cx",p.x); d.setAttribute("cy",p.y);
+    d.setAttribute("r","3"); d.setAttribute("fill","#111"); d.setAttribute("stroke","#fff"); d.setAttribute("stroke-width","1"); svg.append(d); });
+}
+function coordsToque(ev,svg){ const r=svg.getBoundingClientRect(); return [ (ev.clientX-r.left)/r.width*200, (ev.clientY-r.top)/r.height*200 ]; }
+function registrarToque(s,x,y,val){ meter(s,val,{x,y}); }
+function tocaCara(ev,svg,s,faces){
+  const [x,y]=coordsToque(ev,svg);
+  let f=faces[0], best=1e9;
+  for(const ff of faces){ const dd=Math.hypot(x-ff.cx,y-ff.cy); if(dd<best){best=dd; f=ff;} }
+  // Regla de línea (WA/RFETA): se resta el radio de la marca; si el borde cruza la línea, sube de zona.
+  const ra=3/f.R, efect=Math.max(0, Math.hypot(x-f.cx,y-f.cy)/f.R - ra);
+  let val="M";
+  for(const [v,frac] of f.anillos){ if(efect<=frac){ val=v; break; } }
+  registrarToque(s,x,y,val);
+}
+// Silueta 3D: jabalí de cuerpo entero (dibujo original y genérico, mirando a la izquierda)
+function dibujarAnimal(svg){
+  const ns="http://www.w3.org/2000/svg";
+  const d="M14,150 C22,140 29,130 39,122 C43,118 45,114 48,110 "
+   +"L51,101 L55,92 L60,100 L66,84 L73,94 L81,78 L90,88 L99,80 L110,89 L122,85 L136,92 L150,96 "
+   +"C161,99 169,104 174,109 L182,99 L187,108 L178,119 L169,119 "
+   +"L168,141 L172,170 L164,170 L160,143 L149,148 "
+   +"L148,151 L153,171 L145,171 L141,150 L117,152 "
+   +"L112,154 L116,172 L108,172 L104,154 L89,152 "
+   +"L84,154 L89,173 L81,173 L77,152 L52,151 "
+   +"C43,152 34,153 26,154 C20,154 15,153 14,150 Z";
+  const body=document.createElementNS(ns,"path");
+  body.setAttribute("d",d); body.setAttribute("fill","#6b5a3e"); body.setAttribute("stroke","#1c160d");
+  body.setAttribute("stroke-width","1.4"); body.setAttribute("stroke-linejoin","round"); svg.append(body);
+  // cola
+  const cola=document.createElementNS(ns,"path"); cola.setAttribute("d","M178,119 c7,2 11,8 9,15 c-1,4 -5,6 -8,4 c3,-1 4,-4 3,-7 c-1,-4 -5,-6 -8,-6 z");
+  cola.setAttribute("fill","#6b5a3e"); cola.setAttribute("stroke","#1c160d"); cola.setAttribute("stroke-width","1"); svg.append(cola);
+  // cerdas del lomo
+  const cer=document.createElementNS(ns,"path");
+  cer.setAttribute("d","M66,82 L69,71 M81,76 L84,64 M99,78 L102,67 M122,83 L125,73");
+  cer.setAttribute("stroke","#443827"); cer.setAttribute("stroke-width","2"); cer.setAttribute("fill","none"); cer.setAttribute("stroke-linecap","round"); svg.append(cer);
+  // ojo y colmillo
+  const ojo=document.createElementNS(ns,"circle"); ojo.setAttribute("cx","46"); ojo.setAttribute("cy","116"); ojo.setAttribute("r","2"); ojo.setAttribute("fill","#120d07"); svg.append(ojo);
+  const col=document.createElementNS(ns,"path"); col.setAttribute("d","M26,146 q-5,0 -7,-5 q4,3 8,2 z"); col.setAttribute("fill","#efe8d2"); col.setAttribute("stroke","#1c160d"); col.setAttribute("stroke-width",".4"); svg.append(col);
+  // zonas vitales (sobre el pecho, tras la pata delantera)
+  const vx=86,vy=120;
+  [["8",28,23,"#b98f49"],["10",18,14,"#e1452f"],["11",8,6,"#f6c344"]].forEach(([v,rx,ry,c])=>{
+    const e=document.createElementNS(ns,"ellipse"); e.setAttribute("cx",vx); e.setAttribute("cy",vy);
+    e.setAttribute("rx",rx); e.setAttribute("ry",ry); e.setAttribute("fill",c); e.setAttribute("stroke","#0006"); e.setAttribute("stroke-width",".5"); svg.append(e);
+  });
+}
+function tocaAnimal(ev,svg,s){
+  const [x,y]=coordsToque(ev,svg);
+  const vx=86,vy=120,rx=28,ry=23;
+  const t=Math.hypot((x-vx)/rx,(y-vy)/ry);
+  let val;
+  if(t<=0.30) val="11"; else if(t<=0.62) val="10"; else if(t<=1.0) val="8";
+  else { const tb=Math.hypot((x-96)/86,(y-124)/36); val = tb<=1 ? "5":"M"; }
+  registrarToque(s,x,y,val);
+}
+function caraDiana(s){
+  const tipo=tipoCara(s), ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg"); svg.setAttribute("viewBox","0 0 200 200"); svg.style.touchAction="none";
+  const arq=vista.arq||0;
+  if(tipo==="ANIMAL"){ dibujarAnimal(svg); svg.addEventListener("pointerdown",ev=>tocaAnimal(ev,svg,s)); }
+  else { const faces=facesDe(tipo,s); for(const f of faces) dibujarCara(svg,f,tipo); svg.addEventListener("pointerdown",ev=>tocaCara(ev,svg,s,faces)); }
+  dibujarMarcas(svg,arq);
+  let cap = s.diana?("Diana: "+s.diana):"";
+  if(tipo==="TRIPLE"){ const n=Math.min(3,(vista.tanda[arq].filter(x=>x!=null).length)+1); cap += " · visor "+n+" de 3"; }
+  return h("div",{class:"diana-wrap"},
+    cap?h("div",{class:"sub", style:"margin:0 0 6px; text-align:center"}, cap):null, svg);
+}
+function colorHex(v){
+  const c=colorClase(v);
+  return {oro:"#f6c344",rojo:"#e1452f",azul:"#2f7fe1",negro:"#20241b",blanco:"#edeee8",fallo:"#3a3f33"}[c];
+}
+function salirTirada(){ guardar(); vista={nombre:"inicio"}; render(); }
+async function finalizar(){
+  const s=sesionActual();
+  if(!await confirmar("¿Finalizar la tirada? Podrás verla en el histórico.")) return;
+  s.estado="COMPLETADA"; guardar();
+  ir({nombre:"detalle", id:s.id});
+}
+
+/* ───────────────────────── Detalle ───────────────────────── */
+function vistaDetalle(){
+  const s=DB.sesiones.find(x=>x.id===vista.id); const d=DISC[s.disciplina];
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:10px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0"}, fechaCorta(s.fecha)),
+  ));
+  m.append(h("div",{class:"sub"}, [d.nombre, s.distancia?`${s.distancia} m`:null,
+    s.modalidad?etiqueta(MODALIDADES,s.modalidad):null, s.categoria?etiqueta(CATEGORIAS,s.categoria):null,
+    s.diana?`diana ${s.diana}`:null, s.tipoSesion==="COMPETICION"?"Competición":"Entrenamiento"].filter(Boolean).join(" · ")));
+
+  // Tabla por arquero
+  for(const a of s.arqueros){
+    const r=totalArquero(a);
+    const card=h("div",{class:"tarjeta"});
+    card.append(h("div",{class:"fila", style:"justify-content:space-between; margin-bottom:8px"},
+      h("strong",{}, a.nombre + (a.yo?" (tú)":"")),
+      h("span",{}, h("span",{class:"total", style:"font-size:1.4rem;font-weight:800"}, String(r.t)), h("span",{class:"muted"}, `  ${r.f} fl · ${r.media.toFixed(2)}`)),
+    ));
+    // tandas
+    const cont=h("div",{});
+    a.tandas.forEach((t,i)=>{
+      const sum=t.reduce((x,v)=>x+valorNum(v),0);
+      const row=h("div",{class:"fila", style:"gap:4px; padding:4px 0; border-top:1px solid var(--line)"});
+      row.append(h("span",{class:"muted", style:"width:28px"}, String(i+1)));
+      t.forEach(v=>row.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, v)));
+      row.append(h("span",{class:"muted", style:"margin-left:auto; font-weight:700"}, String(sum)));
+      cont.append(row);
+    });
+    if(!a.tandas.length) cont.append(h("div",{class:"muted"},"Sin flechas."));
+    card.append(cont);
+    m.append(card);
+  }
+
+  // Distribución (solo del arquero principal)
+  const yo=s.arqueros[0]; const dist={};
+  for(const t of yo.tandas) for(const v of t) dist[v]=(dist[v]||0)+1;
+  const dcard=h("div",{class:"tarjeta"}, h("label",{},"Tu distribución"));
+  const drow=h("div",{style:"display:flex;flex-wrap:wrap;gap:6px"});
+  for(const v of d.valores){ if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
+  dcard.append(drow.children.length?drow:h("div",{class:"muted"},"—"));
+  m.append(dcard);
+
+  m.append(h("div",{class:"fila", style:"gap:10px"},
+    s.estado!=="COMPLETADA" ? h("button",{class:"boton", onclick:()=>ir({nombre:"tirada", id:s.id, arq:0, tanda:[], activo:0})}, "Seguir tirando") : null,
+    h("button",{class:"boton peligro", onclick:async()=>{ if(await confirmar("¿Borrar esta tirada?")){ DB.sesiones=DB.sesiones.filter(x=>x.id!==s.id); guardar(); ir({nombre:"inicio"}); } }}, "Borrar"),
+  ));
+  return m;
+}
+
+/* ───────────────────────── Exportar / importar ───────────────────────── */
+function menuDatos(){
+  modal("Copia de seguridad de tus tiradas", [
+    {t:"⬇  Exportar copia", v:"exp"},
+    {t:"⬆  Importar copia", v:"imp"},
+    {t:"Cancelar", sec:true, v:null},
+  ], v=>{ if(v==="exp") exportar(); else if(v==="imp") importar(); });
+}
+async function exportar(){
+  const datos=JSON.stringify(DB,null,2);
+  const filename="diana-score-copia-"+new Date().toISOString().slice(0,10)+".json";
+  let dl=null; try{ dl = (window.claude&&claude.use)? await claude.use("downloads") : null; }catch(e){}
+  if(dl){ try{ await dl.save({filename, data:datos}); toast("Copia exportada"); }catch(e){ toast("Exportación cancelada"); } return; }
+  const blob=new Blob([datos],{type:"application/json"}); const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url); toast("Copia exportada");
+}
+function importar(){
+  const inp=document.createElement("input"); inp.type="file"; inp.accept="application/json,.json";
+  inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader();
+    r.onload=async()=>{ try{ const d=JSON.parse(r.result); if(!d.sesiones) throw 0;
+      if(await confirmar("Esto reemplazará los datos actuales por los de la copia. ¿Continuar?")){ DB=d; guardar(); vista={nombre:"inicio"}; render(); toast("Copia importada"); }
+    }catch(e){ toast("Archivo no válido"); } };
+    r.readAsText(f); };
+  inp.click();
+}
+
+render();
+</script>
+<script>
+  // Registro del service worker (solo si el navegador lo permite; en el visor web puede ignorarse)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+</script>
+</body>
+</html>
