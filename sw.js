@@ -1,5 +1,5 @@
 /* Service worker de Diana Score: guarda la app para usarla sin conexión. */
-const CACHE = "diana-score-v1";
+const CACHE = "diana-score-v2";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-512-maskable.png",

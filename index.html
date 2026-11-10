@@ -43,6 +43,8 @@
   .marca .punto{width:22px; height:22px; border-radius:50%;
     background:radial-gradient(circle,#10140f 0 22%,var(--rojo) 22% 46%,var(--oro) 46% 100%); flex:0 0 auto}
   .marca b{color:var(--accent)}
+  .autor{font-weight:400; font-style:italic; font-size:.74rem; color:var(--accent); letter-spacing:0; white-space:nowrap}
+  .marca .autor{margin-left:14px}
   header .sep{flex:1}
   .icono-btn{width:40px; height:40px; border-radius:11px; background:var(--surface2);
     display:grid; place-items:center; font-size:1.1rem; border:1px solid var(--line)}
@@ -109,6 +111,29 @@
   .arquero-fila .quitar{width:44px; height:44px; flex:0 0 auto; border-radius:10px; background:var(--surface2);
     border:1px solid var(--line); color:var(--danger); font-size:1.2rem}
 
+  /* Mi material */
+  .fila2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .fila2 .campo{margin-bottom:14px}
+  .vacio.chico{padding:16px; text-align:center; background:var(--surface); border:1px dashed var(--line); border-radius:var(--radio)}
+  .mat-item{display:block; width:100%; text-align:left; cursor:pointer}
+  .mat-item .sub-mat{font-size:.85rem; margin-top:2px}
+  .mat-item strong{font-size:1.02rem}
+  .badge-mod{flex:0 0 auto; align-self:flex-start; font-size:.72rem; font-weight:700; padding:3px 8px; border-radius:999px;
+    background:var(--surface2); border:1px solid var(--line); color:var(--muted); white-space:nowrap}
+  .badge-mod.mod-RECURVO{color:#e0a92e; border-color:#e0a92e55}
+  .badge-mod.mod-COMPUESTO{color:#2f7fe1; border-color:#2f7fe155}
+  .badge-mod.mod-DESNUDO{color:#8a7fe1; border-color:#8a7fe155}
+  .badge-mod.mod-TRADICIONAL{color:#c98a4b; border-color:#c98a4b55}
+  .badge-mod.mod-LONGBOW{color:#6fae6f; border-color:#6fae6f55}
+  .area{width:100%; background:var(--surface2); color:var(--text); border:1px solid var(--line);
+    border-radius:10px; padding:11px 12px; resize:vertical; font-family:inherit; font-size:1rem}
+  .vz-head,.vz-fila{display:grid; grid-template-columns:1fr 1fr 1fr 44px; gap:6px; align-items:center}
+  .vz-head{font-size:.75rem; color:var(--muted); margin-bottom:4px; padding:0 2px}
+  .vz-fila{margin-bottom:6px}
+  .vz-fila input{min-height:40px; padding:8px 10px}
+  .vz-fila .quitar{width:44px; height:40px; border-radius:9px; background:var(--surface2);
+    border:1px solid var(--line); color:var(--danger); font-size:1.1rem}
+
   /* Puntuación */
   .cab-tirada{position:sticky; top:0; z-index:4; background:var(--surface); border-bottom:1px solid var(--line);
     padding:calc(8px + var(--safe-top)) 14px 8px; display:flex; align-items:center; gap:10px}
@@ -131,6 +156,21 @@
   .marcador .big{font-size:2rem; font-weight:800}
   .marcador .x{color:var(--accent); font-weight:700; font-size:1rem}
 
+  .puntos-bar{display:flex; gap:8px; padding:8px 14px 2px}
+  .puntos-bar .pcell{flex:1; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:8px 6px; text-align:center}
+  .puntos-bar .pcell.tot{background:var(--surface2); border-color:var(--accent)}
+  .puntos-bar .pet{font-size:.62rem; text-transform:uppercase; letter-spacing:.3px; color:var(--muted)}
+  .puntos-bar .pval{font-size:1.45rem; font-weight:800; line-height:1.1}
+  .puntos-bar .pval.dim{color:var(--muted)}
+  .puntos-bar .pcell.tot .pval{color:var(--accent)}
+  .fila-tanteo{display:flex; align-items:center; gap:8px; padding:6px 10px}
+  .fila-tanteo .slots{flex:1; padding:6px 0}
+  .lado{display:flex; flex-direction:column; align-items:center; gap:2px; width:64px; flex:0 0 auto;
+    background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:9px 4px; color:var(--text); min-height:58px}
+  .lado .li{font-size:1.2rem; line-height:1}
+  .lado .le{font-size:.62rem; color:var(--muted)}
+  .lado.off{opacity:.38}
+  .lado:not(.off):active{background:var(--surface3)}
   .teclado{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:0 14px}
   .tecla{height:58px; border-radius:12px; font-size:1.3rem; font-weight:800; background:var(--surface2);
     border:1px solid var(--line); color:var(--text)}
@@ -142,6 +182,9 @@
   .tecla.blanco{background:var(--blanco); color:#222; border-color:#0000}
   .tecla.fallo{background:#3a2420; color:#f0b4a6}
   .tecla.util{background:var(--surface3); color:var(--muted); font-size:1.05rem}
+  .tecla.off{opacity:.26; filter:grayscale(.5)}
+  .completa-panel{text-align:center; padding:28px 16px}
+  .completa-panel .ok{color:var(--accent); font-weight:800; font-size:1.35rem}
 
   .diana-wrap{display:grid; place-items:center; padding:6px 14px}
   .diana-wrap svg{width:min(78vw,340px); height:auto; touch-action:none; border-radius:50%}
@@ -173,12 +216,33 @@
   .tile.prox{opacity:.65}
   .tile .badge{font-size:.6rem; text-transform:uppercase; letter-spacing:.4px; color:var(--accent); font-weight:800; margin-top:auto; padding-top:4px}
   .ronda-nota{color:var(--accent); font-weight:700; text-align:center; padding:4px 14px}
+  .serie-cab{font-size:.72rem; text-transform:uppercase; letter-spacing:.5px; color:var(--accent); font-weight:800; margin-top:10px; padding-top:7px; border-top:1px solid var(--line)}
+  .serie-sub{display:flex; justify-content:space-between; align-items:baseline; padding:7px 0; border-top:1px solid var(--line); margin-top:2px; color:var(--muted)}
+  .serie-sub strong{color:var(--text); font-size:1.05rem}
+  .serie-sub.total{border-top:2px solid var(--accent); margin-top:4px}
+  .serie-sub.total span{color:var(--text); font-weight:700}
+  .serie-sub.total strong{color:var(--accent); font-size:1.25rem}
   .chips-dist{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
   .chip-dist{padding:8px 12px; border-radius:999px; background:var(--surface2); border:1px solid var(--line); color:var(--muted); font-weight:600; font-size:.9rem; min-height:40px}
   .chip-dist[aria-pressed=true]{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+  .distrow{display:flex; align-items:center; gap:8px; padding:3px 0}
+  .distrow .dlabel{min-width:30px; height:24px; justify-content:center}
+  .dbar-wrap{flex:1; background:var(--surface2); border-radius:6px; height:14px; overflow:hidden}
+  .dbar{height:100%; border-radius:6px; min-width:2px}
+  .distrow .dcount{min-width:30px; text-align:right; font-variant-numeric:tabular-nums; color:var(--muted); font-weight:700}
+  .colorbar{display:flex; height:22px; border-radius:8px; overflow:hidden; margin-bottom:10px; border:1px solid var(--line)}
+  .colorseg{height:100%}
+  .colorseg.fuera{background-image:repeating-linear-gradient(45deg,#5b6552,#5b6552 3px,#3a4233 3px,#3a4233 6px)}
+  .colorleg{display:flex; flex-wrap:wrap; gap:12px}
+  .legitem{display:flex; align-items:center; gap:5px; font-size:.84rem; color:var(--muted)}
+  .legitem strong{color:var(--text)}
+  .swatch{width:14px; height:14px; border-radius:4px; display:inline-block; flex:0 0 auto}
+  .swatch.fuera{background-image:repeating-linear-gradient(45deg,#5b6552,#5b6552 2px,#3a4233 2px,#3a4233 4px)}
+  .subt{font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin:6px 0}
+  .verdict{font-size:.86rem; color:var(--text); background:var(--surface2); border-left:3px solid var(--accent); border-radius:6px; padding:8px 10px; margin-top:8px; line-height:1.35}
   /* Modal */
   .velo{position:fixed; inset:0; background:#000a; display:grid; place-items:center; z-index:30; padding:20px}
-  .modal{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; max-width:360px; width:100%}
+  .modal{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; max-width:360px; width:100%; max-height:85vh; overflow:auto}
   .modal p{margin:0 0 16px; font-size:1.02rem; line-height:1.4}
   .modal .acc{display:grid; gap:8px}
 </style>
@@ -206,6 +270,23 @@ const DISTANCIAS = {
 const MODALIDADES = [["RECURVO","Recurvo"],["COMPUESTO","Compuesto"],["DESNUDO","Desnudo"],["TRADICIONAL","Tradicional"],["LONGBOW","Longbow"]];
 const CATEGORIAS  = [["U15","U15"],["U18","U18"],["U21","U21"],["SENIOR","Senior"],["V50","+50"]];
 function etiqueta(lista,v){ const e=lista.find(x=>x[0]===v); return e?e[1]:v; }
+
+/* Ficha de arco adaptada a cada modalidad. visor=true muestra tabla de marcas por distancia. */
+const REGLAJE_MOD = {
+  RECURVO: { visor:true, visorLab:"Marcas de visor por distancia", campos:[
+    ["brace","Altura de pala (brace)","cm"],["tiller","Tiller","mm"],["nock","Punto de anclaje (nocking)","mm"],
+    ["boton","Botón (marca / tensión)",""],["clicker","Clicker (posición)",""],["estab","Estabilización",""] ] },
+  COMPUESTO: { visor:true, visorLab:"Marcas de visor por distancia", campos:[
+    ["brace","Altura de pala (brace)","cm"],["pico","Pico de leva / libraje","lbs"],["peep","Peep (altura / diámetro)",""],
+    ["rest","Reposaflechas (rest)",""],["release","Disparador (release)",""],["estab","Estabilización",""] ] },
+  DESNUDO: { visor:true, visorLab:"Marcas de crawl por distancia", campos:[
+    ["brace","Altura de pala (brace)","cm"],["tiller","Tiller","mm"],["nock","Punto de anclaje","mm"],["lastre","Peso / lastre",""] ] },
+  TRADICIONAL: { visor:false, campos:[
+    ["brace","Altura de pala (brace)","cm"],["nock","Punto de anclaje","mm"],["notasm","Notas de montaje",""] ] },
+  LONGBOW: { visor:false, campos:[
+    ["brace","Altura de pala (brace)","cm"],["nock","Punto de anclaje","mm"],["notasm","Notas de montaje",""] ] },
+};
+function cfgReglaje(mod){ return REGLAJE_MOD[mod] || REGLAJE_MOD.RECURVO; }
 // Distancia oficial de competición (sala/aire libre) según modalidad y categoría
 function distanciaOficial(disc, mod, cat){
   if(disc==="SALA") return 18;
@@ -262,8 +343,11 @@ function colorClase(v){
 const DB_KEY = "diana.datos.v1";
 let DB = cargar();
 function cargar(){
-  try{ const r = JSON.parse(localStorage.getItem(DB_KEY)); if(r && r.sesiones) return r; }catch(e){}
-  return { perfil:{ nombre:"" }, sesiones:[], sig:1 };
+  let r=null;
+  try{ r = JSON.parse(localStorage.getItem(DB_KEY)); }catch(e){}
+  if(!r || !r.sesiones) r = { perfil:{ nombre:"" }, sesiones:[], sig:1 };
+  if(!r.material) r.material = { arcos:[], juegos:[], sig:1 };
+  return r;
 }
 function guardar(){ try{ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }catch(e){ toast("No se pudo guardar"); } }
 
@@ -290,9 +374,112 @@ function modal(msg, botones, cb){
   velo.append(h("div",{class:"modal"}, h("p",{},msg), acc)); document.body.append(velo);
 }
 function confirmar(msg){ return new Promise(res=> modal(msg,[{t:"Aceptar",v:true},{t:"Cancelar",sec:true,v:false}], v=>res(!!v)) ); }
+function modalNodo(titulo, nodo){
+  const velo=h("div",{class:"velo", onclick:e=>{ if(e.target===velo) velo.remove(); }});
+  velo.append(h("div",{class:"modal"},
+    h("div",{style:"font-weight:800; font-size:1.1rem; margin-bottom:10px"}, titulo),
+    nodo,
+    h("div",{class:"acc", style:"margin-top:14px"}, h("button",{class:"boton", onclick:()=>velo.remove()}, "Cerrar")),
+  ));
+  document.body.append(velo);
+}
+function resumenSerieNodo(s, a, serie){
+  const d=DISC[s.disciplina], tps=d.tandasSerie, cont=h("div",{});
+  let desde, hasta, etq;
+  if(!tps || serie===0){ desde=1; hasta=a.tandas.length; etq="Total"; }
+  else { desde=(serie-1)*tps+1; hasta=Math.min(serie*tps, a.tandas.length); etq=`Serie ${serie}`; }
+  const seg=a.tandas.slice(desde-1, hasta);
+  if(!seg.length){ cont.append(h("div",{class:"muted"},"Sin flechas en esta serie todavía.")); return cont; }
+  seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i)));
+  const st=subtotalSerie(a.tandas, desde, hasta);
+  cont.append(h("div",{class:"serie-sub total"}, h("span",{}, etq), h("strong",{}, String(st.t))));
+  // conteo de cada valor (10, 9, 8…)
+  const dist={}; for(let i=desde-1;i<hasta;i++) for(const v of a.tandas[i]){ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; }
+  cont.append(h("div",{style:"font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin:12px 0 5px"}, "Número de cada valor"));
+  const drow=h("div",{style:"display:flex; flex-wrap:wrap; gap:6px"});
+  for(const v of d.valores){ if(v==="X") continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
+  cont.append(drow.children.length?drow:h("div",{class:"muted"},"—"));
+  return cont;
+}
+function verResumenSeries(s){
+  const arq=vista.arq||0, a=s.arqueros[arq], d=DISC[s.disciplina], tps=d.tandasSerie;
+  const cont=h("div",{}), cuerpo=h("div",{});
+  if(tps){
+    const numSeries=Math.ceil(d.tandasOficiales/tps), seg=h("div",{class:"segmentos wrap", style:"margin-bottom:12px"}), botones=[];
+    function pinta(idx){ cuerpo.innerHTML=""; cuerpo.append(resumenSerieNodo(s, a, idx));
+      botones.forEach((b,k)=> b.setAttribute("aria-pressed", String(k === (idx===0?botones.length-1:idx-1)))); }
+    for(let i=1;i<=numSeries;i++){ const n=i, b=h("button",{onclick:()=>pinta(n)}, `Serie ${n}`); botones.push(b); seg.append(b); }
+    const bt=h("button",{onclick:()=>pinta(0)}, "Total"); botones.push(bt); seg.append(bt);
+    cont.append(seg); cont.append(cuerpo); pinta(1);
+  } else {
+    cont.append(resumenSerieNodo(s, a, 0));
+  }
+  modalNodo("Resumen de la tirada", cont);
+}
 function fechaCorta(iso){ const d=new Date(iso); return d.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"}); }
 
 function totalArquero(a){ let t=0,f=0,x=0; for(const tanda of a.tandas) for(const fl of tanda){ t+=valorNum(fl); f++; if(fl==="X")x++; } return {t,f,x,media:f?t/f:0}; }
+function subtotalSerie(tandas, desde, hasta){ // desde/hasta 1-indexados, inclusive
+  let t=0,f=0,x=0;
+  for(let i=desde-1;i<hasta && i<tandas.length;i++){ for(const fl of tandas[i]){ t+=valorNum(fl); f++; if(fl==="X")x++; } }
+  return {t,f,x};
+}
+function mostrarValor(v){ return v==="X" ? "10" : v; }   // la X (10 interior) se muestra como 10
+function filaTandaDetalle(t,num){
+  const sum=t.reduce((x,v)=>x+valorNum(v),0);
+  const row=h("div",{class:"fila", style:"gap:4px; padding:4px 0; border-top:1px solid var(--line)"});
+  row.append(h("span",{class:"muted", style:"width:28px"}, String(num)));
+  t.forEach(v=>row.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, mostrarValor(v))));
+  row.append(h("span",{class:"muted", style:"margin-left:auto; font-weight:700"}, String(sum)));
+  return row;
+}
+// Desglose completo de una tirada (series, tandas, subtotales y total) — formato del detalle
+function desgloseArquero(s, a, r){
+  const d=DISC[s.disciplina], tps=d.tandasSerie, cont=h("div",{});
+  if(!a.tandas.length){ cont.append(h("div",{class:"muted"},"Sin flechas.")); return cont; }
+  if(tps){
+    const numSeries=Math.ceil(d.tandasOficiales/tps);
+    for(let serie=1; serie<=numSeries; serie++){
+      const desde=(serie-1)*tps+1, hasta=serie*tps, seg=a.tandas.slice(desde-1,hasta);
+      if(!seg.length) continue;
+      cont.append(h("div",{class:"serie-cab"}, `Serie ${serie}`));
+      seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i)));
+      const st=subtotalSerie(a.tandas, desde, hasta);
+      cont.append(h("div",{class:"serie-sub"}, h("span",{}, `Subtotal serie ${serie}`), h("strong",{}, String(st.t))));
+    }
+    if(a.tandas.length>d.tandasOficiales){
+      cont.append(h("div",{class:"serie-cab"}, "Tandas extra"));
+      a.tandas.slice(d.tandasOficiales).forEach((t,i)=> cont.append(filaTandaDetalle(t, d.tandasOficiales+i+1)));
+    }
+    cont.append(h("div",{class:"serie-sub total"}, h("span",{}, "Total tirada"), h("strong",{}, String(r.t))));
+  } else {
+    a.tandas.forEach((t,i)=> cont.append(filaTandaDetalle(t,i+1)));
+    cont.append(h("div",{class:"serie-sub total"}, h("span",{}, "Total"), h("strong",{}, String(r.t))));
+  }
+  return cont;
+}
+// Marcador: serie activa, serie anterior y total
+function barraPuntos(s, arq, r){
+  const d=DISC[s.disciplina], a=s.arqueros[arq], tps=d.tandasSerie;
+  if(!tps){
+    return h("div",{class:"marcador"},
+      h("div",{}, h("span",{class:"big"}, String(r.t)), " ", h("span",{class:"muted"},"pts")),
+      h("div",{class:"muted"}, `media ${r.media.toFixed(2)}`));
+  }
+  const hechas=a.tandas.length, nTanda=hechas+1, numSeries=Math.ceil(d.tandasOficiales/tps);
+  const serieAct=Math.min(numSeries, Math.ceil(nTanda/tps));
+  const stAct=subtotalSerie(a.tandas,(serieAct-1)*tps+1,serieAct*tps);
+  const serieAnt=serieAct-1, stAnt=serieAnt>=1?subtotalSerie(a.tandas,(serieAnt-1)*tps+1,serieAnt*tps):null;
+  return h("div",{class:"puntos-bar"},
+    h("div",{class:"pcell"}, h("div",{class:"pet"},`Serie ${serieAct}`), h("div",{class:"pval"}, String(stAct.t))),
+    h("div",{class:"pcell"}, h("div",{class:"pet"}, serieAnt>=1?`Serie ${serieAnt}`:"Serie ant."), h("div",{class:"pval dim"}, stAnt?String(stAnt.t):"—")),
+    h("div",{class:"pcell tot"}, h("div",{class:"pet"},"Total"), h("div",{class:"pval"}, String(r.t))),
+  );
+}
+function botonLado(icono, etiqueta, activo, onclick){
+  return h("button",{class:"lado"+(activo?"":" off"), disabled:activo?null:"", onclick:activo?onclick:null},
+    h("span",{class:"li"},icono), h("span",{class:"le"},etiqueta));
+}
 
 /* ───────────────────────── Rutas / render ───────────────────────── */
 let vista = { nombre:"inicio" };
@@ -304,16 +491,20 @@ function render(){
   app.append(cabecera());
   if(vista.nombre==="inicio") app.append(vistaInicio());
   else if(vista.nombre==="historico") app.append(vistaHistorico());
+  else if(vista.nombre==="estadisticas") app.append(vistaEstadisticas());
   else if(vista.nombre==="ajustes") app.append(vistaAjustes());
   else if(vista.nombre==="nueva") app.append(vistaNueva());
   else if(vista.nombre==="tirada") app.append(vistaTirada());
   else if(vista.nombre==="detalle") app.append(vistaDetalle());
+  else if(vista.nombre==="material") app.append(vistaMaterial());
+  else if(vista.nombre==="arco") app.append(vistaArco());
+  else if(vista.nombre==="juego") app.append(vistaJuego());
 }
 
 function cabecera(){
   if(vista.nombre==="tirada") return document.createComment("");
   return h("header",{},
-    h("button",{class:"marca", style:"background:none", onclick:()=>ir({nombre:"inicio"})}, logoSVG(24), h("span",{html:"Diana <b>Score</b>"})),
+    h("button",{class:"marca", style:"background:none", onclick:()=>ir({nombre:"inicio"})}, logoSVG(24), h("span",{html:"Diana <b>Score</b>"}), h("span",{class:"autor"}, "by Javier García López")),
     h("div",{class:"sep"}),
     h("button",{class:"icono-btn", title:"Copia de seguridad", onclick:menuDatos}, "⇅"),
   );
@@ -362,8 +553,8 @@ function vistaInicio(){
   // Menús
   const r=h("div",{class:"rejilla"});
   r.append(tile("📋","Histórico","Tus tiradas guardadas", ()=>ir({nombre:"historico"})));
-  r.append(tile("📊","Estadísticas","Evolución y dispersión", null, "Fase 2"));
-  r.append(tile("🏹","Mi material","Arcos y flechas", null, "Fase 2"));
+  r.append(tile("📊","Estadísticas","Evolución y dispersión", ()=>ir({nombre:"estadisticas"})));
+  r.append(tile("🏹","Mi material","Arcos y flechas", ()=>ir({nombre:"material"})));
   r.append(tile("🎯","Objetivos","Metas y entrenamiento", null, "Fase 3"));
   r.append(tile("💾","Copia de seguridad","Exportar o importar", menuDatos));
   r.append(tile("⚙️","Ajustes","Tu nombre y datos", ()=>ir({nombre:"ajustes"})));
@@ -460,11 +651,215 @@ async function borrarSeleccion(){
   }
 }
 
+/* ───────────────────────── Estadísticas ───────────────────────── */
+function chartLinea(vals){
+  const ns="http://www.w3.org/2000/svg", w=324, H=132, pad=24;
+  if(vals.length<2) return h("div",{class:"muted", style:"padding:8px 0"},"Necesitas al menos 2 tiradas para ver la evolución.");
+  const min=Math.min(...vals), max=Math.max(...vals);
+  const lo=Math.max(0,Math.floor(min)), hi=Math.ceil(max)===lo?lo+1:Math.ceil(max), rng=hi-lo;
+  const X=i=> pad + (w-pad-8)*(i/(vals.length-1));
+  const Y=v=> pad + (H-pad-16)*(1-(v-lo)/rng);
+  const svg=document.createElementNS(ns,"svg"); svg.setAttribute("viewBox",`0 0 ${w} ${H}`); svg.setAttribute("width","100%");
+  [lo,(lo+hi)/2,hi].forEach(g=>{ const y=Y(g);
+    const l=document.createElementNS(ns,"line"); l.setAttribute("x1",pad);l.setAttribute("x2",w-8);l.setAttribute("y1",y);l.setAttribute("y2",y);l.setAttribute("stroke","#2f3a28");l.setAttribute("stroke-width",".6"); svg.append(l);
+    const t=document.createElementNS(ns,"text"); t.setAttribute("x",2);t.setAttribute("y",y+3);t.setAttribute("fill","#9aa893");t.setAttribute("font-size","9"); t.textContent=g.toFixed(1); svg.append(t); });
+  let d=""; vals.forEach((v,i)=> d+=(i?"L":"M")+X(i).toFixed(1)+","+Y(v).toFixed(1)+" ");
+  const p=document.createElementNS(ns,"path"); p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke","#e0a92e");p.setAttribute("stroke-width","2");p.setAttribute("stroke-linejoin","round"); svg.append(p);
+  vals.forEach((v,i)=>{ const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",X(i));c.setAttribute("cy",Y(v));c.setAttribute("r","2.4");c.setAttribute("fill","#e0a92e"); svg.append(c); });
+  return svg;
+}
+const CHEX={oro:"#f6c344",rojo:"#e1452f",azul:"#2f7fe1",negro:"#20241b",blanco:"#edeee8",fallo:"#5b6552"};
+function barraColores(ses){
+  const orden=[["oro","Amarillo"],["rojo","Rojo"],["azul","Azul"],["negro","Negro"],["blanco","Blanco"],["fallo","Fuera"]];
+  const cuenta={}; let total=0;
+  ses.forEach(s=> s.arqueros[0].tandas.forEach(t=> t.forEach(v=>{ const c=colorClase(v); cuenta[c]=(cuenta[c]||0)+1; total++; })));
+  if(!total) return h("div",{class:"muted"},"—");
+  const barra=h("div",{class:"colorbar"});
+  orden.forEach(([c])=>{ if(!cuenta[c]) return; const seg=h("div",{class:"colorseg"+(c==="fallo"?" fuera":""), style:`width:${(cuenta[c]/total*100).toFixed(2)}%; background:${CHEX[c]}`}); barra.append(seg); });
+  const leg=h("div",{class:"colorleg"});
+  orden.forEach(([c,nombre])=>{ if(!cuenta[c]) return; const pct=Math.round(cuenta[c]/total*100);
+    leg.append(h("div",{class:"legitem"}, h("span",{class:"swatch"+(c==="fallo"?" fuera":""), style:`background:${CHEX[c]}`}), h("span",{}, `${nombre} `), h("strong",{}, `${pct}%`))); });
+  const wrap=h("div",{}); wrap.append(barra); wrap.append(leg); return wrap;
+}
+function barrasDist(dist, orden){
+  const max=Math.max(1, ...orden.map(v=>dist[v]||0)), cont=h("div",{});
+  let alguno=false;
+  for(const v of orden){ const c=dist[v]||0; if(!c) continue; alguno=true;
+    const clr=colorHex(v), txt=["oro","blanco"].includes(colorClase(v))?"#222":"#fff";
+    cont.append(h("div",{class:"distrow"},
+      h("span",{class:"dlabel chip-val "+colorClase(v), style:`background:${clr}; color:${txt}`}, v),
+      h("div",{class:"dbar-wrap"}, h("div",{class:"dbar", style:`width:${(c/max*100).toFixed(1)}%; background:${clr}`})),
+      h("span",{class:"dcount"}, String(c)),
+    ));
+  }
+  return alguno?cont:h("div",{class:"muted"},"—");
+}
+function mapaImpactos(rep, pos){
+  if(!pos.length) return h("div",{class:"muted", style:"padding:8px 0"},"Sin impactos registrados. Tantea con el modo «tocar diana» para verlos aquí.");
+  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg"); svg.setAttribute("viewBox","0 0 200 200"); svg.setAttribute("width","min(68vw,290px)");
+  // Fondo: la cara real de la modalidad (reducida, triple, campo, 122, o silueta 3D)
+  const g=document.createElementNS(ns,"g"); g.setAttribute("opacity",".38");
+  const tipo=tipoCara(rep);
+  if(tipo==="ANIMAL") dibujarAnimal(g);
+  else facesDe(tipo,rep).forEach(f=> dibujarCara(g,f,tipo));
+  svg.append(g);
+  pos.forEach(p=>{ const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",p.x);c.setAttribute("cy",p.y);c.setAttribute("r","1.9");c.setAttribute("fill","#111");c.setAttribute("stroke","#fff");c.setAttribute("stroke-width",".6");c.setAttribute("opacity",".9"); svg.append(c); });
+  const cx=pos.reduce((a,p)=>a+p.x,0)/pos.length, cy=pos.reduce((a,p)=>a+p.y,0)/pos.length;
+  const meanR=pos.reduce((a,p)=>a+Math.hypot(p.x-cx,p.y-cy),0)/pos.length;
+  const disp=document.createElementNS(ns,"circle"); disp.setAttribute("cx",cx);disp.setAttribute("cy",cy);disp.setAttribute("r",Math.max(2,meanR));disp.setAttribute("fill","none");disp.setAttribute("stroke","#e0a92e");disp.setAttribute("stroke-width","1.2");disp.setAttribute("stroke-dasharray","3 2"); svg.append(disp);
+  const cruz=document.createElementNS(ns,"path"); cruz.setAttribute("d",`M${cx-5},${cy} L${cx+5},${cy} M${cx},${cy-5} L${cx},${cy+5}`);cruz.setAttribute("stroke","#e0a92e");cruz.setAttribute("stroke-width","1.4"); svg.append(cruz);
+  const wrap=h("div",{style:"display:grid; place-items:center; gap:6px"});
+  wrap.append(svg);
+  wrap.append(h("div",{class:"muted", style:"font-size:.82rem; text-align:center"}, `${pos.length} impactos · ${rep.diana||DISC[rep.disciplina].nombre} · agrupamiento medio ${(meanR/96*100).toFixed(0)}% del radio`));
+  return wrap;
+}
+function cardPatrones(ses, s0){
+  const fpt=s0.fpt, tri=tipoCara(s0)==="TRIPLE", et=tri?"Visor":"Flecha";
+  const sumF=Array(fpt).fill(0), cntF=Array(fpt).fill(0), modeF=Array.from({length:fpt},()=>({})), posF=Array.from({length:fpt},()=>[]);
+  const tandaAgg=[];
+  ses.forEach(s=>{ const a=s.arqueros[0];
+    a.tandas.forEach((t,ti)=>{ let ts=0,tc=0;
+      t.forEach((v,fi)=>{ if(fi>=fpt) return; const val=valorNum(v); sumF[fi]+=val; cntF[fi]++; ts+=val; tc++; const k=mostrarValor(v); modeF[fi][k]=(modeF[fi][k]||0)+1; });
+      if(tc){ tandaAgg[ti]=tandaAgg[ti]||{s:0,c:0}; tandaAgg[ti].s+=ts/tc; tandaAgg[ti].c++; }
+      const pp=(a.posiciones&&a.posiciones[ti])||[]; pp.forEach((p,fi)=>{ if(p&&fi<fpt) posF[fi].push(p); });
+    });
+  });
+  const mediaF=sumF.map((s,i)=> cntF[i]? s/cntF[i]:null);
+  const dispF=posF.map(arr=>{ if(arr.length<3) return null; const cx=arr.reduce((a,p)=>a+p.x,0)/arr.length, cy=arr.reduce((a,p)=>a+p.y,0)/arr.length; return arr.reduce((a,p)=>a+Math.hypot(p.x-cx,p.y-cy),0)/arr.length; });
+  const porTanda=tandaAgg.map(x=> x&&x.c? x.s/x.c:null).filter(v=>v!=null);
+  const card=h("div",{class:"tarjeta"}, h("label",{},"Patrones"));
+
+  // 1) por flecha / visor: media + valor más frecuente
+  card.append(h("div",{class:"subt"}, tri?"Por visor (cada flecha va a un visor)":"Por flecha de la tanda"));
+  const defin=mediaF.filter(v=>v!=null); if(defin.length){ const maxF=Math.max(...defin), minF=Math.min(...defin);
+    for(let i=0;i<fpt;i++){ if(mediaF[i]==null) continue;
+      const modo=Object.entries(modeF[i]).sort((a,b)=>b[1]-a[1])[0], pct=modo?Math.round(modo[1]/cntF[i]*100):0;
+      card.append(h("div",{class:"distrow"},
+        h("span",{style:"min-width:58px; font-size:.78rem; color:var(--muted)"}, `${et} ${i+1}`),
+        h("div",{class:"dbar-wrap"}, h("div",{class:"dbar", style:`width:${(mediaF[i]/(maxF||1)*100).toFixed(0)}%; background:${mediaF[i]===minF?'#d9553f':'#e0a92e'}`})),
+        h("span",{class:"dcount", style:"min-width:96px"}, `${mediaF[i].toFixed(2)} · ${modo?modo[0]:'-'} ${pct}%`),
+      ));
+    }
+    if(defin.length>=2){ const vals=mediaF.map((v,i)=>({v,i})).filter(o=>o.v!=null), peor=vals.reduce((a,b)=>b.v<a.v?b:a), mej=vals.reduce((a,b)=>b.v>a.v?b:a);
+      card.append(h("div",{class:"verdict"}, (mej.v-peor.v>=0.15)
+        ? `${tri?"El visor":"La flecha"} ${peor.i+1} es tu punto flojo (media ${peor.v.toFixed(2)}, frente a ${mej.v.toFixed(2)} ${tri?"del visor":"de la flecha"} ${mej.i+1}): te cuesta más esa diana.`
+        : `Tiras parejo en ${tri?"los tres visores":"todas las flechas de la tanda"} (diferencia mínima).`));
+    }
+  }
+  // 2) dispersión por flecha
+  if(dispF.some(v=>v!=null)){
+    card.append(h("div",{class:"subt", style:"margin-top:12px"}, "Dispersión por flecha (menos es mejor)"));
+    const maxD=Math.max(...dispF.filter(v=>v!=null));
+    for(let i=0;i<fpt;i++){ if(dispF[i]==null) continue;
+      card.append(h("div",{class:"distrow"},
+        h("span",{style:"min-width:58px; font-size:.78rem; color:var(--muted)"}, `${et} ${i+1}`),
+        h("div",{class:"dbar-wrap"}, h("div",{class:"dbar", style:`width:${(dispF[i]/(maxD||1)*100).toFixed(0)}%; background:#9aa893`})),
+        h("span",{class:"dcount"}, `${(dispF[i]/96*100).toFixed(0)}%`),
+      ));
+    }
+    const d0=dispF[0], resto=dispF.slice(1).filter(v=>v!=null), avgR=resto.length?resto.reduce((a,b)=>a+b,0)/resto.length:null;
+    if(d0!=null && avgR!=null) card.append(h("div",{class:"verdict"}, d0>avgR*1.2?"Tus primeras flechas agrupan peor; cuida la primera de cada tanda." : d0<avgR*0.85?"La primera flecha agrupa mejor que las siguientes." : "Agrupas parejo a lo largo de la tanda."));
+  }
+  // 3) cansancio por tanda
+  if(porTanda.length>=4){
+    card.append(h("div",{class:"subt", style:"margin-top:12px"}, "Cansancio (media por tanda)"));
+    card.append(chartLinea(porTanda));
+    const n=porTanda.length; let best=0,bestDrop=0;
+    for(let i=2;i<n-1;i++){ const ma=porTanda.slice(0,i).reduce((x,y)=>x+y,0)/i, mb=porTanda.slice(i).reduce((x,y)=>x+y,0)/(n-i); if(ma-mb>bestDrop){bestDrop=ma-mb;best=i;} }
+    card.append(h("div",{class:"verdict"}, bestDrop>=0.15
+      ? `A partir de la tanda ${best+1} tu media baja (de ${(porTanda.slice(0,best).reduce((x,y)=>x+y,0)/best).toFixed(2)} a ${(porTanda.slice(best).reduce((x,y)=>x+y,0)/(n-best)).toFixed(2)}): posible efecto del cansancio.`
+      : "No se aprecia caída por cansancio; mantienes la media durante toda la tirada."));
+  }
+  return card;
+}
+function vistaEstadisticas(){
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:12px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0"}, "Estadísticas"),
+  ));
+  if(!vista.filtroDisc) vista.filtroDisc="TODAS";
+  const fd=vista.filtroDisc;
+  const chips=h("div",{class:"chips-dist", style:"margin-bottom:14px"});
+  [["TODAS","Todas"]].concat(Object.keys(DISC).map(k=>[k,DISC[k].nombre])).forEach(([k,txt])=>{
+    chips.append(h("button",{class:"chip-dist", "aria-pressed":String(fd===k), onclick:()=>{ vista.filtroDisc=k; render(); }}, txt)); });
+  m.append(chips);
+
+  const ses = DB.sesiones.filter(s=> s.arqueros[0] && s.arqueros[0].tandas.length>0 && (fd==="TODAS"||s.disciplina===fd))
+    .sort((a,b)=> a.fecha<b.fecha?-1:1);
+  if(!ses.length){
+    m.append(h("div",{class:"vacio"}, h("div",{class:"gran"},"📊"),
+      h("div",{},"Aún no hay tiradas con datos para estas estadísticas."),
+      h("div",{class:"muted", style:"margin-top:6px"},"Registra alguna tirada y vuelve aquí.")));
+    return m;
+  }
+
+  // Selector: todas las tiradas o una concreta
+  if(!vista.filtroSesion) vista.filtroSesion="TODAS";
+  if(vista.filtroSesion!=="TODAS" && !ses.some(s=>s.id===vista.filtroSesion)) vista.filtroSesion="TODAS";
+  const selSes=vista.filtroSesion;
+  const optSes=[["TODAS","Todas las tiradas"]].concat(ses.slice().reverse().map(s=>{
+    const r=totalArquero(s.arqueros[0]);
+    return [String(s.id), `${fechaCorta(s.fecha)} · ${DISC[s.disciplina].nombre}${s.distancia?` · ${s.distancia} m`:""} · ${r.t} pts`]; }));
+  m.append(h("div",{class:"campo", style:"margin-bottom:14px"}, h("label",{},"Ver"),
+    h("select",{onchange:e=>{ vista.filtroSesion = e.target.value==="TODAS"?"TODAS":Number(e.target.value); render(); }},
+      ...optSes.map(([v,t])=>h("option",{value:v, selected:(String(selSes)===v)||undefined}, t)))));
+
+  const unaSola = selSes!=="TODAS";
+  const uni = unaSola ? ses.filter(s=>s.id===selSes) : ses;
+  const discU = unaSola ? uni[0].disciplina : fd;
+
+  // Resumen
+  let flechas=0, pts=0; uni.forEach(s=>{ const r=totalArquero(s.arqueros[0]); flechas+=r.f; pts+=r.t; });
+  m.append(h("div",{class:"resumen"},
+    caja(uni.length,"Tiradas"), caja(flechas,"Flechas"), caja(flechas?(pts/flechas).toFixed(2):"—","Media/flecha")));
+
+  // Evolución de la media: solo tiene sentido con varias tiradas
+  if(!unaSola){
+    const medias = ses.map(s=> totalArquero(s.arqueros[0]).media).slice(-30);
+    m.append(h("div",{class:"tarjeta"}, h("label",{},"Evolución de la media (por tirada)"), chartLinea(medias)));
+  }
+
+  // Distribución de valores
+  const dist={}; uni.forEach(s=> s.arqueros[0].tandas.forEach(t=> t.forEach(v=>{ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; })));
+  const orden = (discU==="TODAS"||!DISC[discU]) ? ["11","10","9","8","7","6","5","4","3","2","1","M"] : DISC[discU].valores.filter(v=>v!=="X");
+  m.append(h("div",{class:"tarjeta"}, h("label",{},"Distribución de valores"), barrasDist(dist, orden)));
+  m.append(h("div",{class:"tarjeta"}, h("label",{},"Flechas por color"), barraColores(uni)));
+
+  // Mapa de impactos y patrones: con una disciplina concreta o con una tirada seleccionada
+  if(unaSola || fd!=="TODAS"){
+    const grupos={};
+    uni.filter(s=> s.metodo==="diana").forEach(s=>{ const tp=tipoCara(s); (grupos[tp]=grupos[tp]||[]).push(s); });
+    let rep=null, pos=[], mejor=-1;
+    for(const tp in grupos){ const ps=[]; grupos[tp].forEach(s=> (s.arqueros[0].posiciones||[]).forEach(t=>(t||[]).forEach(p=>{ if(p) ps.push(p); }))); if(ps.length>mejor){ mejor=ps.length; rep=grupos[tp][0]; pos=ps; } }
+    const card=h("div",{class:"tarjeta"}, h("label",{},"Mapa de impactos"));
+    card.append(rep && pos.length ? mapaImpactos(rep, pos) : h("div",{class:"muted"},"Sin impactos registrados. Usa el modo «tocar diana»."));
+    m.append(card);
+    m.append(cardPatrones(uni, uni[0]));
+  }
+
+  if(!unaSola){
+    const mejores = ses.slice().sort((a,b)=> totalArquero(b.arqueros[0]).t - totalArquero(a.arqueros[0]).t).slice(0,3);
+    const mc=h("div",{class:"tarjeta"}, h("label",{},"Mejores tiradas"));
+    mejores.forEach(s=>{ const r=totalArquero(s.arqueros[0]);
+      mc.append(h("button",{class:"fila", style:"width:100%; background:none; justify-content:space-between; padding:7px 0; border-top:1px solid var(--line); text-align:left", onclick:()=>ir({nombre:"detalle", id:s.id})},
+        h("span",{class:"muted"}, `${fechaCorta(s.fecha)} · ${DISC[s.disciplina].nombre}${s.distancia?` · ${s.distancia} m`:""}`),
+        h("strong",{style:"font-size:1.1rem"}, String(r.t)))); });
+    m.append(mc);
+  } else {
+    const s0=uni[0];
+    m.append(h("button",{class:"boton sec", onclick:()=>ir({nombre:"detalle", id:s0.id})}, "Ver detalle de esta tirada"));
+  }
+  return m;
+}
+
 /* ───────────────────────── Nueva tirada ───────────────────────── */
 let borrador=null;
+let matArco=null;   // borrador de arco en edición
+let matJuego=null;  // borrador de juego de flechas en edición
 function vistaNueva(){
   if(!borrador) borrador={ disciplina:"SALA", modalidad:DB.perfil.modalidad||"RECURVO", categoria:DB.perfil.categoria||"SENIOR",
-    tipoSesion:"ENTRENAMIENTO", metodo:"botones", distancia:18,
+    tipoSesion:"ENTRENAMIENTO", metodo:"diana", distancia:18,
     arqueros:[{nombre:DB.perfil.nombre||"Yo", yo:true}] };
   const b=borrador; const d=DISC[b.disciplina];
   const m=h("main",{});
@@ -495,6 +890,27 @@ function vistaNueva(){
   card.append(h("button",{class:"boton sec chico", style:"margin-top:4px", onclick:()=>{ b.arqueros.push({nombre:"", yo:false}); render(); }}, "+ Añadir arquero"));
   m.append(card);
 
+  // Material usado (opcional)
+  const arcos=DB.material.arcos, juegos=DB.material.juegos;
+  if(arcos.length || juegos.length){
+    const mc=h("div",{class:"tarjeta"}, h("label",{},"Material (opcional)"));
+    if(arcos.length){
+      const comp = arcos.filter(a=>a.modalidad===b.modalidad);
+      const lista = comp.length?comp:arcos;
+      const opc=[["","— sin especificar —"], ...lista.map(a=>[String(a.id), a.nombre||etiqueta(MODALIDADES,a.modalidad)])];
+      mc.append(h("div",{class:"campo"}, h("label",{},"Arco"),
+        h("select",{onchange:e=>b.arcoId=e.target.value?Number(e.target.value):null},
+          ...opc.map(([v,t])=>h("option",{value:v, selected:(String(b.arcoId??"")===v)||undefined}, t)))));
+    }
+    if(juegos.length){
+      const opc=[["","— sin especificar —"], ...juegos.map(j=>[String(j.id), j.nombre||"Juego"])];
+      mc.append(h("div",{class:"campo", style:"margin-bottom:0"}, h("label",{},"Flechas"),
+        h("select",{onchange:e=>b.juegoId=e.target.value?Number(e.target.value):null},
+          ...opc.map(([v,t])=>h("option",{value:v, selected:(String(b.juegoId??"")===v)||undefined}, t)))));
+    }
+    m.append(mc);
+  }
+
   m.append(h("button",{class:"boton", onclick:empezarTirada}, "Empezar tirada"));
   return m;
 }
@@ -524,7 +940,8 @@ function empezarTirada(){
   const arqueros = b.arqueros.map((a,i)=>({ nombre:(a.nombre||"").trim()|| (i===0?"Yo":`Arquero ${i+1}`), yo:i===0, tandas:[] }));
   const s={ id:DB.sig++, fecha:new Date().toISOString(), disciplina:b.disciplina, tipoSesion:b.tipoSesion,
     modalidad:b.modalidad, categoria:b.categoria, diana:dianaOficial(b.disciplina,b.modalidad,b.categoria),
-    metodo:b.metodo, distancia:b.distancia, fpt:d.fpt, estado:"EN_CURSO", arqueros };
+    metodo:b.metodo, distancia:b.distancia, fpt:d.fpt, estado:"EN_CURSO",
+    arcoId:b.arcoId??null, juegoId:b.juegoId??null, arqueros };
   DB.perfil.modalidad=b.modalidad; DB.perfil.categoria=b.categoria;
   DB.sesiones.push(s); guardar(); borrador=null;
   ir({nombre:"tirada", id:s.id, arq:0, tanda:[], activo:0});
@@ -543,9 +960,14 @@ function vistaTirada(){
   const nTanda = s.arqueros[arq].tandas.length + 1;
   const numSeries = d.tandasSerie ? Math.ceil(d.tandasOficiales/d.tandasSerie) : null;
   const serie = d.tandasSerie ? Math.min(numSeries, Math.ceil(nTanda/d.tandasSerie)) : null;
-  let ctx = (d.unidad==="Diana")
-    ? `Diana ${nTanda} de ${d.tandasOficiales}`
-    : `Tanda ${nTanda} de ${d.tandasOficiales}` + (serie?` · Serie ${serie}/${numSeries}`:"");
+  let ctx;
+  if(s.arqueros[arq].tandas.length >= d.tandasOficiales && !vista.tanda[arq].some(v=>v!=null)){
+    ctx = `Completa · ${d.tandasOficiales} ${d.unidad==="Diana"?"dianas":"tandas"}`;
+  } else {
+    ctx = (d.unidad==="Diana")
+      ? `Diana ${nTanda} de ${d.tandasOficiales}`
+      : `Tanda ${nTanda} de ${d.tandasOficiales}` + (serie?` · Serie ${serie}/${numSeries}`:"");
+  }
   if(s.arqueros.length>1) ctx = s.arqueros[arq].nombre + " · " + ctx;
   m.append(h("div",{class:"cab-tirada"},
     h("button",{class:"icono-btn", onclick:salirTirada}, "‹"),
@@ -568,37 +990,47 @@ function vistaTirada(){
     m.append(tabs);
   }
 
-  // Marcador del arquero activo
+  // Marcador: serie activa, serie anterior y total
   const r=totalArquero(s.arqueros[arq]);
-  m.append(h("div",{class:"marcador"},
-    h("div",{}, h("span",{class:"big"}, String(r.t)), " ", h("span",{class:"muted"}, "pts")),
-    h("div",{class:"muted"}, `media ${r.media.toFixed(2)}`, valoresDe(s).includes("X")?h("span",{class:"x"}, `  ${r.x} X`):""),
-  ));
-  if(s.arqueros[arq].tandas.length >= d.tandasOficiales){
-    m.append(h("div",{class:"ronda-nota"}, `✓ Ronda RFETA completa · ${r.t} pts · pulsa Finalizar`));
+  m.append(barraPuntos(s, arq, r));
+
+  // Fila de tanteo: Reabrir (izquierda) · casillas · Resumen (derecha); botones fijos, se activan/desactivan
+  const hechas=s.arqueros[arq].tandas.length;
+  const sinEmpezar = !vista.tanda[arq].some(v=>v!=null);
+  const rondaCompleta = hechas >= d.tandasOficiales && sinEmpezar;
+
+  if(rondaCompleta){
+    // Tirada completa: no se tantea más; solo finalizar, reabrir o ver resumen
+    m.append(h("div",{class:"completa-panel"},
+      h("div",{class:"ok"}, "✓ Tirada completa"),
+      h("div",{class:"muted", style:"margin-top:4px"}, `${hechas} ${d.unidad==="Diana"?"dianas":"tandas"} · ${r.t} puntos · media ${r.media.toFixed(2)}`),
+      h("div",{class:"muted", style:"margin-top:8px; font-size:.85rem"}, "Pulsa Finalizar, o Reabrir para corregir la última."),
+      h("div",{class:"fila", style:"gap:10px; justify-content:center; margin-top:14px"},
+        botonLado("↩","Reabrir", hechas>0, ()=>reabrirTanda(s)),
+        botonLado("📊","Resumen", hechas>0, ()=>verResumenSeries(s)),
+      ),
+    ));
+    m.append(h("div",{style:"height:80px"}));
+    return m;
   }
 
-  // Slots de la tanda en curso
   const slots=h("div",{class:"slots"});
   const activo = vista.activo!=null?vista.activo:vista.tanda[arq].length;
   for(let i=0;i<s.fpt;i++){
     const val=vista.tanda[arq][i];
     slots.append(h("div",{class:"slot "+(val!=null?"lleno ":"")+(i===activo?"activo":""),
-      onclick:()=>{ vista.activo=i; render(); }},
-      val!=null?val:"", ));
+      onclick:()=>{ vista.activo=i; render(); }}, val!=null?mostrarValor(val):""));
   }
-  m.append(slots);
+  m.append(h("div",{class:"fila-tanteo"},
+    botonLado("↩","Reabrir", sinEmpezar && hechas>0, ()=>reabrirTanda(s)),
+    slots,
+    botonLado("📊","Resumen", hechas>0, ()=>verResumenSeries(s)),
+  ));
 
   // Entrada: diana o botones
   if(s.metodo==="diana") m.append(caraDiana(s));
   m.append(teclado(s));
-
-  // Reabrir la última tanda guardada (por si se cerró con un error)
-  const sinEmpezar = !vista.tanda[arq].some(v=>v!=null);
-  if(sinEmpezar && s.arqueros[arq].tandas.length){
-    m.append(h("div",{style:"text-align:center; padding:10px 14px 0"},
-      h("button",{class:"boton sec chico", onclick:()=>reabrirTanda(s)}, "↩  Reabrir última tanda")));
-  }
+  m.append(h("div",{style:"height:96px"}));   // hueco para que la barra inferior no tape el teclado
 
   // Barra inferior: cerrar tanda
   const completa = vista.tanda[arq].length>=s.fpt && vista.tanda[arq].every(v=>v!=null);
@@ -631,6 +1063,7 @@ function cerrarTanda(s){
   const flechas = vista.tanda[arq].slice(0,s.fpt).filter(v=>v!=null);
   if(flechas.length<s.fpt){ toast("Faltan flechas"); return; }
   const a=s.arqueros[arq];
+  if(a.tandas.length >= DISC[s.disciplina].tandasOficiales){ toast("Tirada completa"); return; }
   a.tandas.push(flechas);
   // En "tocar diana": guardar la posición de cada flecha y limpiar las marcas de la diana
   if(s.metodo==="diana"){
@@ -666,16 +1099,24 @@ function reabrirTanda(s){
 }
 function teclado(s){
   const t=h("div",{class:"teclado"});
+  const permit=new Set(valoresCara(s));
   for(const v of valoresDe(s)){
-    t.append(h("button",{class:"tecla "+colorClase(v), onclick:()=>meter(s,v)}, v));
+    const on=permit.has(v);
+    t.append(h("button",{class:"tecla "+colorClase(v)+(on?"":" off"), disabled:on?null:"", onclick:on?()=>meter(s,v):null}, v));
   }
   return t;
 }
 // Valores puntuables según disciplina y modalidad (compuesto en sala: el 10 interior es el 10, sin X)
-function valoresDe(s){
-  let v=DISC[s.disciplina].valores.slice();
-  if(s.disciplina==="SALA" && s.modalidad==="COMPUESTO") v=v.filter(x=>x!=="X");
-  return v;
+function valoresDe(s){ return DISC[s.disciplina].valores.filter(v=> v!=="X"); } // la X (10 interior) se cuenta como 10
+// Valores que REALMENTE existen en la cara de diana seleccionada (para habilitar/deshabilitar el teclado)
+function valoresCara(s){
+  const tipo=tipoCara(s);
+  if(tipo==="CAMPO")  return ["6","5","4","3","2","1","M"];
+  if(tipo==="ANIMAL") return ["11","10","8","5","M"];
+  const base=valoresDe(s);
+  if(tipo==="REDUCIDA") return base.filter(v=> v==="M" || Number(v)>=5);  // reducida al 5
+  if(tipo==="TRIPLE")   return base.filter(v=> v==="M" || Number(v)>=6);  // triple vertical: hasta el 6
+  return base;                                                            // completa: 10..1
 }
 // Tipo de cara de diana a dibujar según disciplina y diana oficial seleccionada
 function tipoCara(s){
@@ -798,6 +1239,12 @@ function vistaDetalle(){
   m.append(h("div",{class:"sub"}, [d.nombre, s.distancia?`${s.distancia} m`:null,
     s.modalidad?etiqueta(MODALIDADES,s.modalidad):null, s.categoria?etiqueta(CATEGORIAS,s.categoria):null,
     s.diana?`diana ${s.diana}`:null, s.tipoSesion==="COMPETICION"?"Competición":"Entrenamiento"].filter(Boolean).join(" · ")));
+  const arcoS=s.arcoId?arcoPorId(s.arcoId):null, juegoS=s.juegoId?juegoPorId(s.juegoId):null;
+  if(arcoS||juegoS){
+    m.append(h("div",{class:"sub", style:"margin-top:-2px"}, "🏹 "+[
+      arcoS?(arcoS.nombre||etiqueta(MODALIDADES,arcoS.modalidad)):null,
+      juegoS?(juegoS.nombre||"flechas"):null].filter(Boolean).join(" · ")));
+  }
 
   // Tabla por arquero
   for(const a of s.arqueros){
@@ -807,35 +1254,231 @@ function vistaDetalle(){
       h("strong",{}, a.nombre + (a.yo?" (tú)":"")),
       h("span",{}, h("span",{class:"total", style:"font-size:1.4rem;font-weight:800"}, String(r.t)), h("span",{class:"muted"}, `  ${r.f} fl · ${r.media.toFixed(2)}`)),
     ));
-    // tandas
-    const cont=h("div",{});
-    a.tandas.forEach((t,i)=>{
-      const sum=t.reduce((x,v)=>x+valorNum(v),0);
-      const row=h("div",{class:"fila", style:"gap:4px; padding:4px 0; border-top:1px solid var(--line)"});
-      row.append(h("span",{class:"muted", style:"width:28px"}, String(i+1)));
-      t.forEach(v=>row.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, v)));
-      row.append(h("span",{class:"muted", style:"margin-left:auto; font-weight:700"}, String(sum)));
-      cont.append(row);
-    });
-    if(!a.tandas.length) cont.append(h("div",{class:"muted"},"Sin flechas."));
-    card.append(cont);
+    card.append(desgloseArquero(s, a, r));
     m.append(card);
   }
 
   // Distribución (solo del arquero principal)
   const yo=s.arqueros[0]; const dist={};
-  for(const t of yo.tandas) for(const v of t) dist[v]=(dist[v]||0)+1;
+  for(const t of yo.tandas) for(const v of t){ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; }
   const dcard=h("div",{class:"tarjeta"}, h("label",{},"Tu distribución"));
   const drow=h("div",{style:"display:flex;flex-wrap:wrap;gap:6px"});
-  for(const v of d.valores){ if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
+  for(const v of d.valores){ if(v==="X") continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
   dcard.append(drow.children.length?drow:h("div",{class:"muted"},"—"));
   m.append(dcard);
 
   m.append(h("div",{class:"fila", style:"gap:10px"},
-    s.estado!=="COMPLETADA" ? h("button",{class:"boton", onclick:()=>ir({nombre:"tirada", id:s.id, arq:0, tanda:[], activo:0})}, "Seguir tirando") : null,
+    h("button",{class:"boton", onclick:()=>{ s.estado="EN_PROGRESO"; guardar(); ir({nombre:"tirada", id:s.id, arq:0, tanda:[], activo:0}); }}, "Seguir tanteando"),
     h("button",{class:"boton peligro", onclick:async()=>{ if(await confirmar("¿Borrar esta tirada?")){ DB.sesiones=DB.sesiones.filter(x=>x.id!==s.id); guardar(); ir({nombre:"inicio"}); } }}, "Borrar"),
   ));
   return m;
+}
+
+/* ───────────────────────── Mi material ───────────────────────── */
+function arcosDe(){ return DB.material.arcos; }
+function juegosDe(){ return DB.material.juegos; }
+function arcoPorId(id){ return DB.material.arcos.find(a=>a.id===id); }
+function juegoPorId(id){ return DB.material.juegos.find(j=>j.id===id); }
+
+function vistaMaterial(){
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:12px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, "Mi material"),
+  ));
+
+  // Arcos
+  m.append(h("div",{class:"fila", style:"justify-content:space-between; margin-bottom:8px"},
+    h("label",{style:"margin:0"}, "Arcos"),
+    h("button",{class:"boton sec chico", onclick:()=>{ matArco=nuevoArco(); ir({nombre:"arco"}); }}, "+ Añadir arco"),
+  ));
+  const arcos=arcosDe();
+  if(!arcos.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Aún no has añadido ningún arco.")));
+  } else {
+    arcos.forEach(a=> m.append(fichaArcoResumen(a)));
+  }
+
+  // Flechas
+  m.append(h("div",{class:"fila", style:"justify-content:space-between; margin:18px 0 8px"},
+    h("label",{style:"margin:0"}, "Juegos de flechas"),
+    h("button",{class:"boton sec chico", onclick:()=>{ matJuego=nuevoJuego(); ir({nombre:"juego"}); }}, "+ Añadir flechas"),
+  ));
+  const juegos=juegosDe();
+  if(!juegos.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Aún no has añadido ningún juego de flechas.")));
+  } else {
+    juegos.forEach(j=> m.append(fichaJuegoResumen(j)));
+  }
+  return m;
+}
+function fichaArcoResumen(a){
+  const sub=[etiqueta(MODALIDADES,a.modalidad), a.marca, a.modelo].filter(Boolean).join(" · ");
+  const extra=[a.libraje?a.libraje+" lbs":null, a.apertura?a.apertura+'" apertura':null].filter(Boolean).join(" · ");
+  return h("button",{class:"tarjeta mat-item", onclick:()=>{ matArco=JSON.parse(JSON.stringify(a)); ir({nombre:"arco"}); }},
+    h("div",{class:"fila", style:"justify-content:space-between; gap:8px"},
+      h("div",{style:"text-align:left; min-width:0"},
+        h("strong",{}, a.nombre||"Arco sin nombre"),
+        h("div",{class:"muted sub-mat"}, sub||"—"),
+        extra?h("div",{class:"muted sub-mat"}, extra):null),
+      h("span",{class:"badge-mod mod-"+a.modalidad}, etiqueta(MODALIDADES,a.modalidad)),
+    ));
+}
+function fichaJuegoResumen(j){
+  const arco=j.arcoId?arcoPorId(j.arcoId):null;
+  const sub=[j.tubo?("Ø "+j.tubo):null, j.longitud?j.longitud+'"':null, j.punta?j.punta+" gr":null].filter(Boolean).join(" · ");
+  return h("button",{class:"tarjeta mat-item", onclick:()=>{ matJuego=JSON.parse(JSON.stringify(j)); ir({nombre:"juego"}); }},
+    h("div",{style:"text-align:left"},
+      h("div",{class:"fila", style:"justify-content:space-between; gap:8px"},
+        h("strong",{}, j.nombre||"Juego sin nombre"),
+        j.cantidad?h("span",{class:"muted"}, j.cantidad+" fl"):null),
+      h("div",{class:"muted sub-mat"}, sub||"—"),
+      arco?h("div",{class:"muted sub-mat"}, "Para: "+(arco.nombre||etiqueta(MODALIDADES,arco.modalidad))):null,
+    ));
+}
+
+function nuevoArco(){ return { id:null, nombre:"", modalidad:(DB.perfil.modalidad||"RECURVO"), mano:"D",
+  marca:"", modelo:"", libraje:"", longitud:"", apertura:"", reglaje:{}, visor:[], notas:"" }; }
+function nuevoJuego(){ return { id:null, nombre:"", arcoId:null, cantidad:"", tubo:"", marca:"", modelo:"",
+  longitud:"", punta:"", plumas:"", culatin:"", notas:"" }; }
+
+function campoTexto(lab, val, onin, ph, tipo){
+  return h("div",{class:"campo"}, h("label",{},lab),
+    h("input",{type:tipo||"text", value:val==null?"":val, placeholder:ph||"", inputmode:tipo==="number"?"decimal":undefined,
+      oninput:e=>onin(e.target.value)}));
+}
+function filaDoble(a,b){ return h("div",{class:"fila2"}, a, b); }
+
+function vistaArco(){
+  const a=matArco; if(!a){ ir({nombre:"material"}); return h("main",{}); }
+  const cfg=cfgReglaje(a.modalidad);
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:10px"},
+    h("button",{class:"icono-btn", onclick:()=>{ matArco=null; ir({nombre:"material"}); }}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, a.id?"Editar arco":"Nuevo arco"),
+  ));
+
+  // Datos generales
+  const c1=h("div",{class:"tarjeta"});
+  c1.append(campoTexto("Nombre del arco", a.nombre, v=>a.nombre=v, "Ej.: Mi recurvo de competición"));
+  c1.append(campoSeg("Modalidad", MODALIDADES, a.modalidad, v=>{ a.modalidad=v; render(); }, true));
+  c1.append(campoSeg("Mano", [["D","Diestro"],["I","Zurdo"]], a.mano, v=>{ a.mano=v; render(); }));
+  c1.append(filaDoble(
+    campoTexto("Marca", a.marca, v=>a.marca=v),
+    campoTexto("Modelo", a.modelo, v=>a.modelo=v)));
+  c1.append(filaDoble(
+    campoTexto("Libraje (lbs)", a.libraje, v=>a.libraje=v, "", "number"),
+    campoTexto('Apertura (")', a.apertura, v=>a.apertura=v, "", "number")));
+  c1.append(campoTexto('Longitud del arco (")', a.longitud, v=>a.longitud=v, "Ej.: 68", "number"));
+  m.append(c1);
+
+  // Reglaje adaptado a la modalidad
+  const c2=h("div",{class:"tarjeta"});
+  c2.append(h("label",{style:"font-size:.95rem;color:var(--text);font-weight:700;margin-bottom:10px"}, "Reglaje · "+etiqueta(MODALIDADES,a.modalidad)));
+  cfg.campos.forEach(([k,lab,u])=>{
+    c2.append(campoTexto(u?`${lab} (${u})`:lab, a.reglaje[k], v=>a.reglaje[k]=v));
+  });
+  m.append(c2);
+
+  // Tabla de visor / crawl (solo si aplica)
+  if(cfg.visor){
+    const c3=h("div",{class:"tarjeta"});
+    c3.append(h("div",{class:"fila", style:"justify-content:space-between; margin-bottom:10px"},
+      h("label",{style:"margin:0;font-size:.95rem;color:var(--text);font-weight:700"}, cfg.visorLab),
+      h("button",{class:"boton sec chico", onclick:()=>{ a.visor.push({dist:"",valor:"",nota:""}); render(); }}, "+ Fila"),
+    ));
+    if(!a.visor.length){
+      c3.append(h("div",{class:"muted", style:"font-size:.9rem"}, "Añade una fila por cada distancia para guardar su marca."));
+    } else {
+      c3.append(h("div",{class:"vz-head"}, h("span",{},"Distancia"), h("span",{},"Marca"), h("span",{},"Nota"), h("span",{})));
+      a.visor.forEach((f,i)=>{
+        c3.append(h("div",{class:"vz-fila"},
+          h("input",{type:"number", inputmode:"decimal", value:f.dist, placeholder:"m", oninput:e=>f.dist=e.target.value}),
+          h("input",{type:"text", value:f.valor, placeholder:"marca", oninput:e=>f.valor=e.target.value}),
+          h("input",{type:"text", value:f.nota, placeholder:"opcional", oninput:e=>f.nota=e.target.value}),
+          h("button",{class:"quitar", onclick:()=>{ a.visor.splice(i,1); render(); }}, "×"),
+        ));
+      });
+    }
+    m.append(c3);
+  }
+
+  // Notas
+  const c4=h("div",{class:"tarjeta"});
+  c4.append(h("label",{}, "Notas"));
+  c4.append(h("textarea",{class:"area", rows:"3", placeholder:"Observaciones, cambios de reglaje, etc.",
+    oninput:e=>a.notas=e.target.value}, a.notas||""));
+  m.append(c4);
+
+  // Guardar / eliminar
+  m.append(h("button",{class:"boton", onclick:guardarArco}, a.id?"Guardar cambios":"Guardar arco"));
+  if(a.id){
+    m.append(h("button",{class:"boton peligro", style:"margin-top:10px", onclick:async()=>{
+      if(await confirmar("¿Eliminar este arco?")){
+        DB.material.arcos=DB.material.arcos.filter(x=>x.id!==a.id);
+        DB.material.juegos.forEach(j=>{ if(j.arcoId===a.id) j.arcoId=null; });
+        guardar(); matArco=null; ir({nombre:"material"});
+      } }}, "Eliminar arco"));
+  }
+  return m;
+}
+function guardarArco(){
+  const a=matArco;
+  if(!(a.nombre||"").trim() && !a.marca && !a.modelo){ toast("Ponle al menos un nombre al arco"); return; }
+  if(!a.nombre.trim()) a.nombre = [etiqueta(MODALIDADES,a.modalidad), a.marca].filter(Boolean).join(" ") || "Arco";
+  if(a.id){ const i=DB.material.arcos.findIndex(x=>x.id===a.id); if(i>=0) DB.material.arcos[i]=a; }
+  else { a.id=DB.material.sig++; DB.material.arcos.push(a); }
+  guardar(); matArco=null; toast("Arco guardado"); ir({nombre:"material"});
+}
+
+function vistaJuego(){
+  const j=matJuego; if(!j){ ir({nombre:"material"}); return h("main",{}); }
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:10px"},
+    h("button",{class:"icono-btn", onclick:()=>{ matJuego=null; ir({nombre:"material"}); }}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, j.id?"Editar flechas":"Nuevo juego de flechas"),
+  ));
+  const c1=h("div",{class:"tarjeta"});
+  c1.append(campoTexto("Nombre del juego", j.nombre, v=>j.nombre=v, "Ej.: Juego de competición"));
+  // Arco asociado
+  const arcos=arcosDe();
+  const opc=[["","— ninguno —"], ...arcos.map(a=>[String(a.id), a.nombre||etiqueta(MODALIDADES,a.modalidad)])];
+  c1.append(h("div",{class:"campo"}, h("label",{},"Arco asociado (opcional)"),
+    h("select",{onchange:e=>j.arcoId = e.target.value?Number(e.target.value):null},
+      ...opc.map(([v,t])=> h("option",{value:v, selected:(String(j.arcoId??"")===v)||undefined}, t)))));
+  c1.append(filaDoble(
+    campoTexto("Nº de flechas", j.cantidad, v=>j.cantidad=v, "", "number"),
+    campoTexto("Tubo / spine", j.tubo, v=>j.tubo=v, "Ej.: 500")));
+  c1.append(filaDoble(
+    campoTexto("Marca", j.marca, v=>j.marca=v),
+    campoTexto("Modelo", j.modelo, v=>j.modelo=v)));
+  c1.append(filaDoble(
+    campoTexto('Longitud (")', j.longitud, v=>j.longitud=v, "", "number"),
+    campoTexto("Punta (grains)", j.punta, v=>j.punta=v, "", "number")));
+  c1.append(filaDoble(
+    campoTexto("Plumas / vanes", j.plumas, v=>j.plumas=v, "Ej.: spin 1.75"),
+    campoTexto("Culatín (nock)", j.culatin, v=>j.culatin=v)));
+  m.append(c1);
+  const c2=h("div",{class:"tarjeta"});
+  c2.append(h("label",{}, "Notas"));
+  c2.append(h("textarea",{class:"area", rows:"3", placeholder:"Observaciones",
+    oninput:e=>j.notas=e.target.value}, j.notas||""));
+  m.append(c2);
+  m.append(h("button",{class:"boton", onclick:guardarJuego}, j.id?"Guardar cambios":"Guardar flechas"));
+  if(j.id){
+    m.append(h("button",{class:"boton peligro", style:"margin-top:10px", onclick:async()=>{
+      if(await confirmar("¿Eliminar este juego de flechas?")){
+        DB.material.juegos=DB.material.juegos.filter(x=>x.id!==j.id); guardar(); matJuego=null; ir({nombre:"material"});
+      } }}, "Eliminar juego"));
+  }
+  return m;
+}
+function guardarJuego(){
+  const j=matJuego;
+  if(!j.nombre.trim()) j.nombre = [j.marca, j.tubo].filter(Boolean).join(" ") || "Juego de flechas";
+  if(j.id){ const i=DB.material.juegos.findIndex(x=>x.id===j.id); if(i>=0) DB.material.juegos[i]=j; }
+  else { j.id=DB.material.sig++; DB.material.juegos.push(j); }
+  guardar(); matJuego=null; toast("Flechas guardadas"); ir({nombre:"material"});
 }
 
 /* ───────────────────────── Exportar / importar ───────────────────────── */
@@ -858,7 +1501,7 @@ function importar(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept="application/json,.json";
   inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader();
     r.onload=async()=>{ try{ const d=JSON.parse(r.result); if(!d.sesiones) throw 0;
-      if(await confirmar("Esto reemplazará los datos actuales por los de la copia. ¿Continuar?")){ DB=d; guardar(); vista={nombre:"inicio"}; render(); toast("Copia importada"); }
+      if(await confirmar("Esto reemplazará los datos actuales por los de la copia. ¿Continuar?")){ if(!d.material) d.material={arcos:[],juegos:[],sig:1}; DB=d; guardar(); vista={nombre:"inicio"}; render(); toast("Copia importada"); }
     }catch(e){ toast("Archivo no válido"); } };
     r.readAsText(f); };
   inp.click();
