@@ -1,5 +1,5 @@
 /* Service worker de Diana Score: guarda la app para usarla sin conexión. */
-const CACHE = "diana-score-v4";
+const CACHE = "diana-score-v5";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-512-maskable.png",
@@ -24,10 +24,11 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
 
-  // La página (navegación): intenta red y, si no hay, sirve la copia guardada.
+  // La página (navegación): busca SIEMPRE la última versión en la red (saltándose la caché
+  // del navegador) y, si no hay conexión, sirve la copia guardada.
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: "reload" })
         .then((r) => { const cp = r.clone(); caches.open(CACHE).then((c) => c.put("./index.html", cp)); return r; })
         .catch(() => caches.match("./index.html").then((r) => r || caches.match("./")))
     );
