@@ -390,14 +390,14 @@ function resumenSerieNodo(s, a, serie){
   else { desde=(serie-1)*tps+1; hasta=Math.min(serie*tps, a.tandas.length); etq=`Serie ${serie}`; }
   const seg=a.tandas.slice(desde-1, hasta);
   if(!seg.length){ cont.append(h("div",{class:"muted"},"Sin flechas en esta serie todavía.")); return cont; }
-  seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i)));
+  seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i, s)));
   const st=subtotalSerie(a.tandas, desde, hasta);
   cont.append(h("div",{class:"serie-sub total"}, h("span",{}, etq), h("strong",{}, String(st.t))));
-  // conteo de cada valor (10, 9, 8…)
-  const dist={}; for(let i=desde-1;i<hasta;i++) for(const v of a.tandas[i]){ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; }
+  // conteo de cada valor (X, 10, 9, 8…)
+  const dist={}; for(let i=desde-1;i<hasta;i++) for(const v of a.tandas[i]){ const k=mostrarValor(v,s); dist[k]=(dist[k]||0)+1; }
   cont.append(h("div",{style:"font-size:.68rem; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin:12px 0 5px"}, "Número de cada valor"));
   const drow=h("div",{style:"display:flex; flex-wrap:wrap; gap:6px"});
-  for(const v of d.valores){ if(v==="X") continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
+  for(const v of d.valores){ if(v==="X" && !usaX(s)) continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
   cont.append(drow.children.length?drow:h("div",{class:"muted"},"—"));
   return cont;
 }
@@ -424,12 +424,13 @@ function subtotalSerie(tandas, desde, hasta){ // desde/hasta 1-indexados, inclus
   for(let i=desde-1;i<hasta && i<tandas.length;i++){ for(const fl of tandas[i]){ t+=valorNum(fl); f++; if(fl==="X")x++; } }
   return {t,f,x};
 }
-function mostrarValor(v){ return v==="X" ? "10" : v; }   // la X (10 interior) se muestra como 10
-function filaTandaDetalle(t,num){
+// Muestra la X como "X" en tiradas que la usan; en el resto (compuesto) como "10".
+function mostrarValor(v, s){ return v==="X" ? ((s && usaX(s)) ? "X" : "10") : v; }
+function filaTandaDetalle(t,num,s){
   const sum=t.reduce((x,v)=>x+valorNum(v),0);
   const row=h("div",{class:"fila", style:"gap:4px; padding:4px 0; border-top:1px solid var(--line)"});
   row.append(h("span",{class:"muted", style:"width:28px"}, String(num)));
-  t.forEach(v=>row.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, mostrarValor(v))));
+  t.forEach(v=>row.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, mostrarValor(v,s))));
   row.append(h("span",{class:"muted", style:"margin-left:auto; font-weight:700"}, String(sum)));
   return row;
 }
@@ -443,17 +444,17 @@ function desgloseArquero(s, a, r){
       const desde=(serie-1)*tps+1, hasta=serie*tps, seg=a.tandas.slice(desde-1,hasta);
       if(!seg.length) continue;
       cont.append(h("div",{class:"serie-cab"}, `Serie ${serie}`));
-      seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i)));
+      seg.forEach((t,i)=> cont.append(filaTandaDetalle(t, desde+i, s)));
       const st=subtotalSerie(a.tandas, desde, hasta);
       cont.append(h("div",{class:"serie-sub"}, h("span",{}, `Subtotal serie ${serie}`), h("strong",{}, String(st.t))));
     }
     if(a.tandas.length>d.tandasOficiales){
       cont.append(h("div",{class:"serie-cab"}, "Tandas extra"));
-      a.tandas.slice(d.tandasOficiales).forEach((t,i)=> cont.append(filaTandaDetalle(t, d.tandasOficiales+i+1)));
+      a.tandas.slice(d.tandasOficiales).forEach((t,i)=> cont.append(filaTandaDetalle(t, d.tandasOficiales+i+1, s)));
     }
     cont.append(h("div",{class:"serie-sub total"}, h("span",{}, "Total tirada"), h("strong",{}, String(r.t))));
   } else {
-    a.tandas.forEach((t,i)=> cont.append(filaTandaDetalle(t,i+1)));
+    a.tandas.forEach((t,i)=> cont.append(filaTandaDetalle(t,i+1,s)));
     cont.append(h("div",{class:"serie-sub total"}, h("span",{}, "Total"), h("strong",{}, String(r.t))));
   }
   return cont;
@@ -719,7 +720,7 @@ function cardPatrones(ses, s0){
   const tandaAgg=[];
   ses.forEach(s=>{ const a=s.arqueros[0];
     a.tandas.forEach((t,ti)=>{ let ts=0,tc=0;
-      t.forEach((v,fi)=>{ if(fi>=fpt) return; const val=valorNum(v); sumF[fi]+=val; cntF[fi]++; ts+=val; tc++; const k=mostrarValor(v); modeF[fi][k]=(modeF[fi][k]||0)+1; });
+      t.forEach((v,fi)=>{ if(fi>=fpt) return; const val=valorNum(v); sumF[fi]+=val; cntF[fi]++; ts+=val; tc++; const k=mostrarValor(v,s); modeF[fi][k]=(modeF[fi][k]||0)+1; });
       if(tc){ tandaAgg[ti]=tandaAgg[ti]||{s:0,c:0}; tandaAgg[ti].s+=ts/tc; tandaAgg[ti].c++; }
       const pp=(a.posiciones&&a.posiciones[ti])||[]; pp.forEach((p,fi)=>{ if(p&&fi<fpt) posF[fi].push(p); });
     });
@@ -821,8 +822,8 @@ function vistaEstadisticas(){
   }
 
   // Distribución de valores
-  const dist={}; uni.forEach(s=> s.arqueros[0].tandas.forEach(t=> t.forEach(v=>{ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; })));
-  const orden = (discU==="TODAS"||!DISC[discU]) ? ["11","10","9","8","7","6","5","4","3","2","1","M"] : DISC[discU].valores.filter(v=>v!=="X");
+  const dist={}; uni.forEach(s=> s.arqueros[0].tandas.forEach(t=> t.forEach(v=>{ const k=mostrarValor(v,s); dist[k]=(dist[k]||0)+1; })));
+  const orden = (discU==="TODAS"||!DISC[discU]) ? ["X","11","10","9","8","7","6","5","4","3","2","1","M"] : DISC[discU].valores;
   m.append(h("div",{class:"tarjeta"}, h("label",{},"Distribución de valores"), barrasDist(dist, orden)));
   m.append(h("div",{class:"tarjeta"}, h("label",{},"Flechas por color"), barraColores(uni)));
 
@@ -1019,7 +1020,7 @@ function vistaTirada(){
   for(let i=0;i<s.fpt;i++){
     const val=vista.tanda[arq][i];
     slots.append(h("div",{class:"slot "+(val!=null?"lleno ":"")+(i===activo?"activo":""),
-      onclick:()=>{ vista.activo=i; render(); }}, val!=null?mostrarValor(val):""));
+      onclick:()=>{ vista.activo=i; render(); }}, val!=null?mostrarValor(val,s):""));
   }
   m.append(h("div",{class:"fila-tanteo"},
     botonLado("↩","Reabrir", sinEmpezar && hechas>0, ()=>reabrirTanda(s)),
@@ -1106,16 +1107,24 @@ function teclado(s){
   }
   return t;
 }
-// Valores puntuables según disciplina y modalidad (compuesto en sala: el 10 interior es el 10, sin X)
-function valoresDe(s){ return DISC[s.disciplina].valores.filter(v=> v!=="X"); } // la X (10 interior) se cuenta como 10
+// ¿Esta tirada usa la X (10 interior como valor propio)? Sí en sala y aire libre, salvo el
+// compuesto EN SALA (ahí el 10 interior ES el 10, sin X). El compuesto al aire libre sí usa X.
+// Campo y 3D no usan X.
+function usaX(s){
+  if(s.disciplina!=="SALA" && s.disciplina!=="AIRE_LIBRE") return false;
+  if(s.modalidad==="COMPUESTO" && s.disciplina==="SALA") return false;
+  return true;
+}
+// Valores puntuables según disciplina y modalidad
+function valoresDe(s){ return DISC[s.disciplina].valores.filter(v=> v!=="X" || usaX(s)); }
 // Valores que REALMENTE existen en la cara de diana seleccionada (para habilitar/deshabilitar el teclado)
 function valoresCara(s){
   const tipo=tipoCara(s);
   if(tipo==="CAMPO")  return ["6","5","4","3","2","1","M"];
   if(tipo==="ANIMAL") return ["11","10","8","5","M"];
   const base=valoresDe(s);
-  if(tipo==="REDUCIDA") return base.filter(v=> v==="M" || Number(v)>=5);  // reducida al 5
-  if(tipo==="TRIPLE")   return base.filter(v=> v==="M" || Number(v)>=6);  // triple vertical: hasta el 6
+  if(tipo==="REDUCIDA") return base.filter(v=> v==="M" || v==="X" || Number(v)>=5);  // reducida al 5
+  if(tipo==="TRIPLE")   return base.filter(v=> v==="M" || v==="X" || Number(v)>=6);  // triple vertical: hasta el 6
   return base;                                                            // completa: 10..1
 }
 // Tipo de cara de diana a dibujar según disciplina y diana oficial seleccionada
@@ -1260,10 +1269,10 @@ function vistaDetalle(){
 
   // Distribución (solo del arquero principal)
   const yo=s.arqueros[0]; const dist={};
-  for(const t of yo.tandas) for(const v of t){ const k=mostrarValor(v); dist[k]=(dist[k]||0)+1; }
+  for(const t of yo.tandas) for(const v of t){ const k=mostrarValor(v,s); dist[k]=(dist[k]||0)+1; }
   const dcard=h("div",{class:"tarjeta"}, h("label",{},"Tu distribución"));
   const drow=h("div",{style:"display:flex;flex-wrap:wrap;gap:6px"});
-  for(const v of d.valores){ if(v==="X") continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
+  for(const v of d.valores){ if(v==="X" && !usaX(s)) continue; if(dist[v]) drow.append(h("span",{class:"chip-val "+colorClase(v), style:`background:${colorHex(v)}; color:${["oro","blanco"].includes(colorClase(v))?"#222":"#fff"}`}, `${v}·${dist[v]}`)); }
   dcard.append(drow.children.length?drow:h("div",{class:"muted"},"—"));
   m.append(dcard);
 
