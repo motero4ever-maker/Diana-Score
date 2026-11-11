@@ -134,6 +134,52 @@
   .vz-fila .quitar{width:44px; height:40px; border-radius:9px; background:var(--surface2);
     border:1px solid var(--line); color:var(--danger); font-size:1.1rem}
 
+  /* Objetivos y entrenamiento */
+  .obj-card{display:block; width:100%; text-align:left; cursor:pointer}
+  .prog{height:9px; border-radius:999px; background:var(--surface2); border:1px solid var(--line); overflow:hidden; margin-top:10px}
+  .prog-in{height:100%; background:var(--accent); border-radius:999px; transition:width .3s}
+  .prog-in.ok{background:#3fae5a}
+  .badge-logro{flex:0 0 auto; align-self:flex-start; font-size:.72rem; font-weight:700; padding:3px 8px; border-radius:999px;
+    background:#3fae5a22; border:1px solid #3fae5a55; color:#3fae5a; white-space:nowrap}
+  .rec-fila{padding:9px 0}
+  .analisis{border-left:3px solid var(--line); padding:7px 0 9px 11px; margin-top:12px}
+  .analisis.aviso{border-color:#e1452f}
+  .analisis.ok{border-color:#3fae5a}
+  .an-tit{font-weight:700; font-size:.92rem}
+  .an-txt{font-size:.86rem; color:var(--muted); margin-top:2px}
+  .an-con{font-size:.86rem; margin-top:5px; line-height:1.4}
+
+  /* Calendario */
+  .cal-cab{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+  .cal-cab button{width:40px; height:40px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); color:var(--text); font-size:1.1rem}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px}
+  .cal-dow{text-align:center; font-size:.68rem; color:var(--muted); padding:2px 0; text-transform:uppercase; letter-spacing:.3px}
+  .cal-dia{aspect-ratio:1; border:1px solid var(--line); border-radius:9px; background:var(--surface); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:3px; font-size:.9rem; color:var(--text); cursor:pointer; position:relative; padding:0}
+  .cal-dia.fuera{opacity:.3}
+  .cal-dia.hoy{border-color:var(--accent); border-width:2px}
+  .cal-dia.sel{background:var(--accent); color:var(--accent-ink)}
+  .cal-puntos{display:flex; gap:3px; height:6px}
+  .cal-pt{width:6px; height:6px; border-radius:999px}
+  .cal-pt.plan{background:#2f7fe1}
+  .cal-pt.hecho{background:#3fae5a}
+  .cal-pt.comp{background:#e1452f}
+  .cal-dia.comp-dia{box-shadow:inset 0 0 0 2px #e1452f88}
+  .cal-dia.comp-dia.sel{box-shadow:none}
+  .badge-comp{display:inline-block; font-size:.66rem; font-weight:700; padding:2px 7px; border-radius:999px;
+    background:#e1452f22; border:1px solid #e1452f66; color:#e1452f; white-space:nowrap}
+  .cal-leyenda{display:flex; gap:14px; justify-content:center; font-size:.74rem; color:var(--muted); margin-top:10px}
+  .cal-leyenda span{display:inline-flex; align-items:center; gap:5px}
+
+  /* Retos e insignias */
+  .reto-card{display:block}
+  .reto-meta{flex:0 0 auto; align-self:flex-start; font-weight:800; color:var(--accent); font-size:1.05rem}
+  .insignias{display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:10px}
+  .insignia{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:10px 6px; text-align:center}
+  .ins-ic{font-size:1.6rem; line-height:1}
+  .ins-n{font-weight:800; color:var(--accent); margin-top:3px; font-size:1.05rem}
+  .ins-t{font-size:.64rem; color:var(--muted); margin-top:3px; line-height:1.2}
+
   /* Puntuación */
   .cab-tirada{position:sticky; top:0; z-index:4; background:var(--surface); border-bottom:1px solid var(--line);
     padding:calc(8px + var(--safe-top)) 14px 8px; display:flex; align-items:center; gap:10px}
@@ -347,6 +393,8 @@ function cargar(){
   try{ r = JSON.parse(localStorage.getItem(DB_KEY)); }catch(e){}
   if(!r || !r.sesiones) r = { perfil:{ nombre:"" }, sesiones:[], sig:1 };
   if(!r.material) r.material = { arcos:[], juegos:[], sig:1 };
+  if(!r.objetivos) r.objetivos = { lista:[], sig:1 };
+  if(!r.plan) r.plan = { lista:[], sig:1 };
   return r;
 }
 function guardar(){ try{ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }catch(e){ toast("No se pudo guardar"); } }
@@ -500,6 +548,8 @@ function render(){
   else if(vista.nombre==="material") app.append(vistaMaterial());
   else if(vista.nombre==="arco") app.append(vistaArco());
   else if(vista.nombre==="juego") app.append(vistaJuego());
+  else if(vista.nombre==="objetivos") app.append(vistaObjetivos());
+  else if(vista.nombre==="objetivo") app.append(vistaObjetivo());
 }
 
 function cabecera(){
@@ -556,7 +606,7 @@ function vistaInicio(){
   r.append(tile("📋","Histórico","Tus tiradas guardadas", ()=>ir({nombre:"historico"})));
   r.append(tile("📊","Estadísticas","Evolución y dispersión", ()=>ir({nombre:"estadisticas"})));
   r.append(tile("🏹","Mi material","Arcos y flechas", ()=>ir({nombre:"material"})));
-  r.append(tile("🎯","Objetivos","Metas y entrenamiento", null, "Fase 3"));
+  r.append(tile("🎯","Objetivos","Metas y entrenamiento", ()=>ir({nombre:"objetivos"})));
   r.append(tile("💾","Copia de seguridad","Exportar o importar", menuDatos));
   r.append(tile("⚙️","Ajustes","Tu nombre y datos", ()=>ir({nombre:"ajustes"})));
   m.append(r);
@@ -773,6 +823,60 @@ function cardPatrones(ses, s0){
   }
   return card;
 }
+
+// Motor de análisis con consejos de corrección (deriva, dispersión, series, consistencia)
+function analisisPatrones(ses){
+  const out=[];
+  const pos=[]; ses.forEach(s=>{ if(s.metodo!=="diana") return; (s.arqueros[0].posiciones||[]).forEach(t=>(t||[]).forEach(p=>{ if(p) pos.push(p); })); });
+  if(pos.length>=6){
+    const cx=pos.reduce((a,p)=>a+p.x,0)/pos.length, cy=pos.reduce((a,p)=>a+p.y,0)/pos.length;
+    const dx=cx-100, dy=cy-100, prOff=Math.hypot(dx,dy)/96*100;
+    const meanR=pos.reduce((a,p)=>a+Math.hypot(p.x-cx,p.y-cy),0)/pos.length, prDisp=meanR/96*100;
+    // Deriva (sesgo direccional del grupo); umbral 8% del radio
+    const T=96*0.08;
+    const hor = dx<=-T?"izq": dx>=T?"der":"";
+    const ver = dy<=-T?"arr": dy>=T?"aba":"";
+    if(prOff>=8 && (hor||ver)){
+      const dir=[{arr:"arriba",aba:"abajo"}[ver], {izq:"a la izquierda",der:"a la derecha"}[hor]].filter(Boolean).join(" y ");
+      const tips=[];
+      if(hor) tips.push("mueve el visor "+(hor==="izq"?"a la izquierda":"a la derecha")+" (el visor se corrige hacia donde van las flechas); revisa la presión de la empuñadura y la alineación, y en recurvo la tensión del botón");
+      if(ver) tips.push(ver==="arr"?"baja el visor; comprueba el punto de anclaje y no sobreextender":"sube el visor; revisa la extensión y el ángulo del brazo de arco");
+      out.push({nivel:"aviso", titulo:"Deriva de la agrupación", texto:`El centro de tus impactos se desplaza ${dir} (${prOff.toFixed(0)}% del radio).`, consejo:"Corrección: "+tips.join(". ")+"."});
+    } else {
+      out.push({nivel:"ok", titulo:"Agrupación centrada", texto:"El centro de tus impactos está bien alineado con el de la diana.", consejo:""});
+    }
+    // Dispersión global
+    if(prDisp>=15) out.push({nivel:"aviso", titulo:"Agrupación amplia", texto:`Dispersión media del ${prDisp.toFixed(0)}% del radio.`, consejo:"Corrección: trabaja la repetición del gesto — anclaje firme y constante, tensión de espalda y 'follow-through'. El tiro a ciega (blank bale) a corta distancia ayuda a fijar la técnica sin pensar en la puntuación."});
+    else out.push({nivel:"ok", titulo:"Buena agrupación", texto:`Dispersión media del ${prDisp.toFixed(0)}% del radio.`, consejo:""});
+  }
+  // Fatiga por tandas (normalizada por disciplina para poder mezclar)
+  const idxN=[]; ses.forEach(s=>{ const max=Math.max(...DISC[s.disciplina].valores.map(valorNum))||10, fpt=s.fpt;
+    s.arqueros[0].tandas.forEach((t,ti)=>{ let sm=0,n=0; t.forEach((v,fi)=>{ if(fi<fpt){ sm+=valorNum(v); n++; } }); if(n){ (idxN[ti]=idxN[ti]||[]).push((sm/n)/max); } }); });
+  if(idxN.length>=4){
+    const prom=idxN.map(a=>a.reduce((x,y)=>x+y,0)/a.length), n=prom.length, t=Math.max(1,Math.floor(n/3));
+    const ini=prom.slice(0,t).reduce((a,b)=>a+b,0)/t, fin=prom.slice(n-t).reduce((a,b)=>a+b,0)/t, caida=(ini-fin)*100;
+    if(caida>=7) out.push({nivel:"aviso", titulo:"Posible fatiga", texto:`Tu rendimiento cae un ${caida.toFixed(0)}% entre las primeras y las últimas tandas.`, consejo:"Corrección: trabaja resistencia (series en vacío o a corta distancia), cuida el ritmo y la hidratación, y reduce las flechas por serie si pierdes técnica al final."});
+  }
+  // Consistencia entre tiradas
+  const medias=ses.map(s=>{ const max=Math.max(...DISC[s.disciplina].valores.map(valorNum))||10, r=totalArquero(s.arqueros[0]); return r.f?(r.media/max):null; }).filter(v=>v!=null);
+  if(medias.length>=3){
+    const mu=medias.reduce((a,b)=>a+b,0)/medias.length, sd=Math.sqrt(medias.reduce((a,b)=>a+(b-mu)**2,0)/medias.length), cv=mu?sd/mu*100:0;
+    if(cv>=3) out.push({nivel:"aviso", titulo:"Resultados irregulares", texto:`Tus medias varían bastante entre tiradas (±${cv.toFixed(0)}%).`, consejo:"Corrección: fija una rutina de tiro idéntica flecha a flecha (pre-tiro, respiración, tiempo de anclaje) y trabaja la concentración; la regularidad llega antes que la media alta."});
+    else out.push({nivel:"ok", titulo:"Resultados regulares", texto:`Tus tiradas son consistentes (±${cv.toFixed(0)}%).`, consejo:""});
+  }
+  return out;
+}
+function cardAnalisis(ses){
+  const card=h("div",{class:"tarjeta"}, h("label",{},"Análisis y consejos"));
+  const res=analisisPatrones(ses);
+  if(!res.length){ card.append(h("div",{class:"muted", style:"font-size:.9rem"}, "Necesitas más datos (idealmente tiradas con «tocar diana») para el análisis.")); return card; }
+  res.forEach(f=>{ const item=h("div",{class:"analisis "+f.nivel});
+    item.append(h("div",{class:"an-tit"}, (f.nivel==="aviso"?"⚠ ":"✓ ")+f.titulo));
+    item.append(h("div",{class:"an-txt"}, f.texto));
+    if(f.consejo) item.append(h("div",{class:"an-con"}, f.consejo));
+    card.append(item); });
+  return card;
+}
 function vistaEstadisticas(){
   const m=h("main",{});
   m.append(h("div",{class:"fila", style:"margin-bottom:12px"},
@@ -786,12 +890,28 @@ function vistaEstadisticas(){
     chips.append(h("button",{class:"chip-dist", "aria-pressed":String(fd===k), onclick:()=>{ vista.filtroDisc=k; render(); }}, txt)); });
   m.append(chips);
 
-  const ses = DB.sesiones.filter(s=> s.arqueros[0] && s.arqueros[0].tandas.length>0 && (fd==="TODAS"||s.disciplina===fd))
+  // Filtros de periodo y tipo de sesión
+  if(!vista.filtroPeriodo) vista.filtroPeriodo="TODO";
+  if(!vista.filtroTipo) vista.filtroTipo="TODAS";
+  const fp=vista.filtroPeriodo, ft=vista.filtroTipo;
+  const segP=h("div",{class:"segmentos", style:"margin-bottom:8px"});
+  [["TODO","Todo"],["30D","30 días"],["90D","90 días"],["ANIO","Este año"]].forEach(([k,t])=>
+    segP.append(h("button",{"aria-pressed":String(fp===k), onclick:()=>{ vista.filtroPeriodo=k; render(); }}, t)));
+  m.append(segP);
+  const segT=h("div",{class:"segmentos", style:"margin-bottom:14px"});
+  [["TODAS","Todas"],["ENTRENAMIENTO","Entreno"],["COMPETICION","Competición"]].forEach(([k,t])=>
+    segT.append(h("button",{"aria-pressed":String(ft===k), onclick:()=>{ vista.filtroTipo=k; render(); }}, t)));
+  m.append(segT);
+  const limite = fp==="30D" ? Date.now()-30*864e5 : fp==="90D" ? Date.now()-90*864e5 : fp==="ANIO" ? new Date(new Date().getFullYear(),0,1).getTime() : 0;
+  const tipoOk = s => ft==="TODAS" || (ft==="COMPETICION" ? s.tipoSesion==="COMPETICION" : s.tipoSesion!=="COMPETICION");
+
+  const ses = DB.sesiones.filter(s=> s.arqueros[0] && s.arqueros[0].tandas.length>0 && (fd==="TODAS"||s.disciplina===fd)
+      && (!limite || new Date(s.fecha).getTime()>=limite) && tipoOk(s))
     .sort((a,b)=> a.fecha<b.fecha?-1:1);
   if(!ses.length){
     m.append(h("div",{class:"vacio"}, h("div",{class:"gran"},"📊"),
-      h("div",{},"Aún no hay tiradas con datos para estas estadísticas."),
-      h("div",{class:"muted", style:"margin-top:6px"},"Registra alguna tirada y vuelve aquí.")));
+      h("div",{},"No hay tiradas con datos para este filtro."),
+      h("div",{class:"muted", style:"margin-top:6px"},"Prueba a ampliar el periodo o el tipo.")));
     return m;
   }
 
@@ -838,6 +958,8 @@ function vistaEstadisticas(){
     m.append(card);
     m.append(cardPatrones(uni, uni[0]));
   }
+  // Análisis y consejos (deriva, dispersión, fatiga, consistencia) sobre el conjunto filtrado
+  m.append(cardAnalisis(uni));
 
   if(!unaSola){
     const mejores = ses.slice().sort((a,b)=> totalArquero(b.arqueros[0]).t - totalArquero(a.arqueros[0]).t).slice(0,3);
@@ -858,6 +980,7 @@ function vistaEstadisticas(){
 let borrador=null;
 let matArco=null;   // borrador de arco en edición
 let matJuego=null;  // borrador de juego de flechas en edición
+let objDraft=null;  // borrador de objetivo en edición
 function vistaNueva(){
   if(!borrador) borrador={ disciplina:"SALA", modalidad:DB.perfil.modalidad||"RECURVO", categoria:DB.perfil.categoria||"SENIOR",
     tipoSesion:"ENTRENAMIENTO", metodo:"diana", distancia:18,
@@ -1065,12 +1188,18 @@ function cerrarTanda(s){
   if(flechas.length<s.fpt){ toast("Faltan flechas"); return; }
   const a=s.arqueros[arq];
   if(a.tandas.length >= DISC[s.disciplina].tandasOficiales){ toast("Tirada completa"); return; }
-  a.tandas.push(flechas);
-  // En "tocar diana": guardar la posición de cada flecha y limpiar las marcas de la diana
+  // Posiciones de impacto (modo "tocar diana"), alineadas con las flechas por índice
+  let pos = null;
+  if(s.metodo==="diana"){
+    pos = (vista.puntos&&vista.puntos[arq]) ? vista.puntos[arq].slice(0,s.fpt).map(p=>p?{x:p.x,y:p.y}:null) : [];
+  }
+  // Ordenar la tanda de mayor a menor, manteniendo cada valor con su posición (la X por delante del 10)
+  const clave=v=> valorNum(v) + (v==="X"?0.5:0);
+  const idx = flechas.map((_,i)=>i).sort((i,j)=> clave(flechas[j]) - clave(flechas[i]));
+  a.tandas.push(idx.map(i=>flechas[i]));
   if(s.metodo==="diana"){
     if(!a.posiciones) a.posiciones=[];
-    const pos = (vista.puntos&&vista.puntos[arq]) ? vista.puntos[arq].slice(0,s.fpt).map(p=>p?{x:p.x,y:p.y}:null) : [];
-    a.posiciones.push(pos);
+    a.posiciones.push(idx.map(i=> pos[i]!==undefined ? pos[i] : null));
     if(vista.puntos) vista.puntos[arq]=[];
   }
   vista.tanda[arq]=[];
@@ -1490,6 +1619,374 @@ function guardarJuego(){
   guardar(); matJuego=null; toast("Flechas guardadas"); ir({nombre:"material"});
 }
 
+/* ───────────────────────── Objetivos y entrenamiento (Fase 3) ───────────────────────── */
+function inicioSemana(d){ const x=new Date(d); const day=(x.getDay()+6)%7; x.setHours(0,0,0,0); x.setDate(x.getDate()-day); return x; } // lunes
+function inicioMes(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(1); return x; }
+function sesionesCompletas(){ return DB.sesiones.filter(s=> s.arqueros && s.arqueros[0]); }
+function coincideDisc(s,o){ return (o.disciplina==="TODAS"||!o.disciplina||s.disciplina===o.disciplina) && (!o.modalidad||o.modalidad==="TODAS"||s.modalidad===o.modalidad); }
+
+// Récords personales: mejor total por disciplina+modalidad
+function records(){
+  const map={};
+  sesionesCompletas().forEach(s=>{ const r=totalArquero(s.arqueros[0]); if(!r.f) return;
+    const k=s.disciplina+"|"+s.modalidad;
+    if(!map[k] || r.t>map[k].total){ map[k]={disciplina:s.disciplina, modalidad:s.modalidad, total:r.t, x:r.x, fecha:s.fecha, distancia:s.distancia, id:s.id}; } });
+  return Object.values(map).sort((a,b)=> a.disciplina===b.disciplina ? 0 : a.disciplina<b.disciplina?-1:1);
+}
+
+// Progreso de un objetivo a partir del histórico
+function progresoObjetivo(o){
+  const ses=sesionesCompletas();
+  if(o.tipo==="MEDIA"){
+    const m=ses.filter(s=>coincideDisc(s,o)).map(s=>totalArquero(s.arqueros[0])).filter(r=>r.f);
+    const act = m.length ? (m.reduce((a,r)=>a+r.media,0)/m.length) : 0;
+    return { act, meta:o.valor, pct: Math.min(1, o.valor? act/o.valor : 0), txt:`${act.toFixed(2)} / ${(+o.valor).toFixed(2)} media`, n:m.length };
+  }
+  if(o.tipo==="PUNTUACION"){
+    const tot=ses.filter(s=>coincideDisc(s,o)).map(s=>totalArquero(s.arqueros[0]).t);
+    const act = tot.length ? Math.max(...tot) : 0;
+    return { act, meta:o.valor, pct: Math.min(1, o.valor? act/o.valor : 0), txt:`mejor ${act} / ${o.valor} pts`, n:tot.length };
+  }
+  if(o.tipo==="VOLUMEN"){
+    const desde = o.periodo==="MES" ? inicioMes(new Date()) : inicioSemana(new Date());
+    const enP = ses.filter(s=> new Date(s.fecha)>=desde);
+    const act = o.unidad==="FLECHAS" ? enP.reduce((a,s)=>a+totalArquero(s.arqueros[0]).f,0) : enP.length;
+    const u = o.unidad==="FLECHAS" ? "flechas" : "tiradas";
+    return { act, meta:o.valor, pct: Math.min(1, o.valor? act/o.valor : 0), txt:`${act} / ${o.valor} ${u} ${o.periodo==="MES"?"este mes":"esta semana"}` };
+  }
+  if(o.tipo==="CONSTANCIA"){
+    const desde = inicioSemana(new Date());
+    const dias = new Set(ses.filter(s=> new Date(s.fecha)>=desde).map(s=> new Date(s.fecha).toDateString()));
+    const act = dias.size;
+    return { act, meta:o.valor, pct: Math.min(1, o.valor? act/o.valor : 0), txt:`${act} / ${o.valor} días esta semana` };
+  }
+  return { act:0, meta:0, pct:0, txt:"" };
+}
+function descObjetivo(o){
+  const disc = (o.disciplina && o.disciplina!=="TODAS") ? DISC[o.disciplina].nombre : "Todas las disciplinas";
+  const mod = (o.modalidad && o.modalidad!=="TODAS") ? " · "+etiqueta(MODALIDADES,o.modalidad) : "";
+  if(o.tipo==="MEDIA") return "Media objetivo · "+disc+mod;
+  if(o.tipo==="PUNTUACION") return "Puntuación objetivo · "+disc+mod;
+  if(o.tipo==="VOLUMEN") return "Volumen · "+(o.periodo==="MES"?"mensual":"semanal");
+  if(o.tipo==="CONSTANCIA") return "Constancia · semanal";
+  return "";
+}
+
+function vistaObjetivos(){
+  if(!vista.tabObj) vista.tabObj="OBJ";
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:12px"},
+    h("button",{class:"icono-btn", onclick:()=>ir({nombre:"inicio"})}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, "Objetivos"),
+  ));
+  // pestañas
+  m.append(h("div",{class:"segmentos", style:"margin-bottom:14px"},
+    botSeg("Objetivos", vista.tabObj==="OBJ", ()=>{ vista.tabObj="OBJ"; render(); }),
+    botSeg("Calendario", vista.tabObj==="CAL", ()=>{ vista.tabObj="CAL"; render(); }),
+    botSeg("Entreno", vista.tabObj==="ENTRENO", ()=>{ vista.tabObj="ENTRENO"; render(); }),
+    botSeg("Retos", vista.tabObj==="RETOS", ()=>{ vista.tabObj="RETOS"; render(); }),
+  ));
+  if(vista.tabObj==="OBJ") paneObjetivos(m);
+  else if(vista.tabObj==="CAL") paneCalendario(m);
+  else if(vista.tabObj==="ENTRENO") paneEntreno(m);
+  else paneLogros(m);
+  return m;
+}
+function botSeg(txt,activo,onclick){ return h("button",{"aria-pressed":String(!!activo), onclick}, txt); }
+
+function paneObjetivos(m){
+  m.append(h("div",{class:"fila", style:"justify-content:space-between; margin-bottom:8px"},
+    h("label",{style:"margin:0"}, "Mis objetivos"),
+    h("button",{class:"boton sec chico", onclick:()=>{ objDraft=nuevoObjetivo(); ir({nombre:"objetivo"}); }}, "+ Nuevo objetivo"),
+  ));
+  const lista=DB.objetivos.lista;
+  if(!lista.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Aún no has fijado objetivos. Crea uno y verás el progreso con tus tiradas.")));
+  } else {
+    lista.forEach(o=>{ const p=progresoObjetivo(o);
+      const logrado = p.pct>=1;
+      const card=h("button",{class:"tarjeta obj-card", onclick:()=>{ objDraft=JSON.parse(JSON.stringify(o)); ir({nombre:"objetivo"}); }});
+      card.append(h("div",{class:"fila", style:"justify-content:space-between; gap:8px"},
+        h("div",{style:"text-align:left; min-width:0"},
+          h("strong",{}, descObjetivo(o)),
+          h("div",{class:"muted sub-mat"}, p.txt)),
+        logrado?h("span",{class:"badge-logro"}, "✓ Logrado"):null));
+      const barra=h("div",{class:"prog"}); barra.append(h("div",{class:"prog-in"+(logrado?" ok":""), style:`width:${Math.round(p.pct*100)}%`}));
+      card.append(barra);
+      m.append(card);
+    });
+  }
+  // Récords
+  m.append(h("div",{class:"fila", style:"margin:18px 0 8px"}, h("label",{style:"margin:0"}, "Récords personales")));
+  const recs=records();
+  if(!recs.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Cuando registres tiradas aparecerán aquí tus mejores marcas.")));
+  } else {
+    const card=h("div",{class:"tarjeta"});
+    recs.forEach((r,i)=>{
+      card.append(h("button",{class:"fila rec-fila", style:"width:100%; background:none; justify-content:space-between; text-align:left"+(i?"; border-top:1px solid var(--line)":""), onclick:()=>ir({nombre:"detalle", id:r.id})},
+        h("div",{},
+          h("strong",{}, DISC[r.disciplina].nombre+(r.distancia?` · ${r.distancia} m`:"")),
+          h("div",{class:"muted sub-mat"}, etiqueta(MODALIDADES,r.modalidad)+" · "+fechaCorta(r.fecha))),
+        h("div",{style:"text-align:right"},
+          h("strong",{style:"font-size:1.15rem; color:var(--accent)"}, String(r.total)),
+          r.x?h("div",{class:"muted sub-mat"}, r.x+"× X"):null)));
+    });
+    m.append(card);
+  }
+}
+
+function paneEntreno(m){
+  const entrenos = sesionesCompletas().filter(s=> s.tipoSesion!=="COMPETICION");
+  const desdeSem=inicioSemana(new Date()), desdeMes=inicioMes(new Date());
+  const sem = entrenos.filter(s=> new Date(s.fecha)>=desdeSem);
+  const mes = entrenos.filter(s=> new Date(s.fecha)>=desdeMes);
+  const flSem = sem.reduce((a,s)=>a+totalArquero(s.arqueros[0]).f,0);
+  const flMes = mes.reduce((a,s)=>a+totalArquero(s.arqueros[0]).f,0);
+  const racha=rachaSemanas();
+  m.append(h("div",{class:"resumen"},
+    caja(sem.length,"Entrenos (sem)"), caja(flSem,"Flechas (sem)"), caja(racha,"Racha (sem)")));
+  m.append(h("div",{class:"resumen", style:"margin-top:10px"},
+    caja(mes.length,"Entrenos (mes)"), caja(flMes,"Flechas (mes)"), caja(entrenos.length,"Entrenos total")));
+  m.append(h("div",{class:"muted", style:"font-size:.82rem; margin:14px 0 8px"},
+    "Se cuentan como entrenamiento las tiradas cuyo tipo de sesión no es competición. Elige el tipo al crear cada tirada."));
+  m.append(h("div",{class:"fila", style:"margin-bottom:8px"}, h("label",{style:"margin:0"}, "Diario de entrenamientos")));
+  if(!entrenos.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Aún no hay entrenamientos registrados.")));
+  } else {
+    const card=h("div",{class:"tarjeta"});
+    entrenos.slice().reverse().slice(0,40).forEach((s,i)=>{ const r=totalArquero(s.arqueros[0]);
+      card.append(h("button",{class:"fila", style:"width:100%; background:none; justify-content:space-between; text-align:left"+(i?"; border-top:1px solid var(--line)":""), onclick:()=>ir({nombre:"detalle", id:s.id})},
+        h("div",{},
+          h("strong",{}, DISC[s.disciplina].nombre+(s.distancia?` · ${s.distancia} m`:"")),
+          h("div",{class:"muted sub-mat"}, fechaCorta(s.fecha)+" · "+etiqueta(MODALIDADES,s.modalidad))),
+        h("strong",{style:"font-size:1.1rem"}, String(r.t))));
+    });
+    m.append(card);
+  }
+}
+
+function rachaSemanas(){
+  const entrenos=sesionesCompletas().filter(s=> s.tipoSesion!=="COMPETICION");
+  let racha=0, w=inicioSemana(new Date());
+  for(let k=0;k<160;k++){ const ini=new Date(w), fin=new Date(w); fin.setDate(fin.getDate()+7);
+    const hay=entrenos.some(s=>{ const f=new Date(s.fecha); return f>=ini && f<fin; });
+    if(hay) racha++; else if(k>0) break; else { w.setDate(w.getDate()-7); continue; }
+    w.setDate(w.getDate()-7); }
+  return racha;
+}
+function ymd(d){ const x=new Date(d); return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
+function fechaCortaYMD(f){ const [y,mo,d]=f.split("-"); return new Date(+y,+mo-1,+d).toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}); }
+function paneCalendario(m){
+  const hoy=new Date();
+  if(!vista.calMes) vista.calMes={y:hoy.getFullYear(), mes:hoy.getMonth()};
+  const {y,mes}=vista.calMes;
+  const primero=new Date(y,mes,1), offset=(primero.getDay()+6)%7, diasMes=new Date(y,mes+1,0).getDate();
+  m.append(h("div",{class:"cal-cab"},
+    h("button",{onclick:()=>{ let mm=mes-1,yy=y; if(mm<0){mm=11;yy--;} vista.calMes={y:yy,mes:mm}; render(); }},"‹"),
+    h("strong",{style:"text-transform:capitalize"}, primero.toLocaleDateString("es-ES",{month:"long",year:"numeric"})),
+    h("button",{onclick:()=>{ let mm=mes+1,yy=y; if(mm>11){mm=0;yy++;} vista.calMes={y:yy,mes:mm}; render(); }},"›"),
+  ));
+  const grid=h("div",{class:"cal-grid"});
+  ["L","M","X","J","V","S","D"].forEach(d=> grid.append(h("div",{class:"cal-dow"}, d)));
+  const planE={}, planC={}, tirSet={};
+  DB.plan.lista.forEach(p=>{ if((p.tipo||"ENTRENO")==="COMPETICION") planC[p.fecha]=true; else planE[p.fecha]=true; });
+  DB.sesiones.forEach(s=>{ if(s.arqueros&&s.arqueros[0]) tirSet[ymd(s.fecha)]=true; });
+  for(let i=0;i<offset;i++) grid.append(h("div",{}));
+  for(let d=1; d<=diasMes; d++){
+    const fecha=`${y}-${String(mes+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const esHoy=ymd(hoy)===fecha, sel=vista.diaSel===fecha, comp=planC[fecha];
+    const cell=h("button",{class:"cal-dia"+(esHoy?" hoy":"")+(sel?" sel":"")+(comp?" comp-dia":""), onclick:()=>{ vista.diaSel = sel?null:fecha; render(); }}, h("span",{}, String(d)));
+    const pts=h("div",{class:"cal-puntos"});
+    if(planC[fecha]) pts.append(h("span",{class:"cal-pt comp"}));
+    if(planE[fecha]) pts.append(h("span",{class:"cal-pt plan"}));
+    if(tirSet[fecha]) pts.append(h("span",{class:"cal-pt hecho"}));
+    cell.append(pts); grid.append(cell);
+  }
+  m.append(grid);
+  m.append(h("div",{class:"cal-leyenda"},
+    h("span",{}, h("span",{class:"cal-pt comp"}), "Competición"),
+    h("span",{}, h("span",{class:"cal-pt plan"}), "Entreno"),
+    h("span",{}, h("span",{class:"cal-pt hecho"}), "Tirada registrada")));
+  if(vista.diaSel) m.append(panelDia(vista.diaSel));
+  const futuros=DB.plan.lista.filter(p=>p.fecha>=ymd(hoy) && !p.hecho).sort((a,b)=>a.fecha<b.fecha?-1:1).slice(0,8);
+  if(futuros.length){
+    m.append(h("div",{class:"fila", style:"margin:18px 0 8px"}, h("label",{style:"margin:0"},"Próximos eventos")));
+    const card=h("div",{class:"tarjeta"});
+    futuros.forEach((p,i)=>{ const comp=(p.tipo||"ENTRENO")==="COMPETICION";
+      card.append(h("button",{class:"fila", style:"width:100%;background:none;justify-content:space-between;text-align:left"+(i?";border-top:1px solid var(--line)":""), onclick:()=>{ vista.calMes={y:+p.fecha.slice(0,4),mes:+p.fecha.slice(5,7)-1}; vista.diaSel=p.fecha; render(); }},
+        h("div",{style:"min-width:0"},
+          h("strong",{}, (comp?"🏆 ":"")+(p.titulo||(comp?"Competición":"Entreno"))),
+          p.nota?h("div",{class:"muted sub-mat"}, p.nota):null),
+        h("div",{style:"text-align:right; flex:0 0 auto"},
+          comp?h("div",{class:"badge-comp"}, "Competición"):null,
+          h("span",{class:"muted", style:"text-transform:capitalize; white-space:nowrap; font-size:.82rem"}, fechaCortaYMD(p.fecha))))); });
+    m.append(card);
+  }
+}
+function panelDia(fecha){
+  const card=h("div",{class:"tarjeta", style:"margin-top:14px"});
+  card.append(h("label",{style:"text-transform:capitalize"}, fechaCortaYMD(fecha)));
+  DB.plan.lista.filter(p=>p.fecha===fecha).forEach(p=>{ const comp=(p.tipo||"ENTRENO")==="COMPETICION";
+    card.append(h("div",{class:"fila", style:"justify-content:space-between; gap:8px; padding:8px 0; border-top:1px solid var(--line)"},
+      h("div",{style:"min-width:0; text-align:left"},
+        h("strong",{style:p.hecho?"text-decoration:line-through; opacity:.55":""}, (comp?"🏆 ":"")+(p.titulo||(comp?"Competición":"Entreno"))),
+        comp?h("span",{class:"badge-comp", style:"margin-left:6px"}, "Competición"):null,
+        p.nota?h("div",{class:"muted sub-mat"}, p.nota):null),
+      h("div",{class:"fila", style:"gap:6px; flex:0 0 auto"},
+        h("button",{class:"boton sec chico", onclick:()=>{ p.hecho=!p.hecho; guardar(); render(); }}, p.hecho?"✓ Hecho":"Marcar"),
+        h("button",{class:"icono-btn", style:"color:var(--danger); width:38px; height:38px", onclick:()=>{ DB.plan.lista=DB.plan.lista.filter(x=>x.id!==p.id); guardar(); render(); }}, "×"))));
+  });
+  const tir=DB.sesiones.filter(s=> s.arqueros&&s.arqueros[0] && ymd(s.fecha)===fecha);
+  if(tir.length){
+    card.append(h("div",{class:"subt", style:"margin-top:10px"}, "Tiradas de ese día"));
+    tir.forEach(s=>{ const r=totalArquero(s.arqueros[0]);
+      card.append(h("button",{class:"fila", style:"width:100%; background:none; justify-content:space-between; text-align:left; padding:6px 0", onclick:()=>ir({nombre:"detalle", id:s.id})},
+        h("span",{class:"muted"}, DISC[s.disciplina].nombre+" · "+etiqueta(MODALIDADES,s.modalidad)), h("strong",{}, String(r.t)))); });
+  }
+  card.append(h("div",{class:"subt", style:"margin-top:12px"}, "Programar evento"));
+  if(!vista.planTipo) vista.planTipo="ENTRENO";
+  card.append(h("div",{class:"segmentos", style:"margin-bottom:10px"},
+    botSeg("Entreno", vista.planTipo==="ENTRENO", ()=>{ vista.planTipo="ENTRENO"; render(); }),
+    botSeg("Competición oficial", vista.planTipo==="COMPETICION", ()=>{ vista.planTipo="COMPETICION"; render(); }),
+  ));
+  const esComp=vista.planTipo==="COMPETICION";
+  card.append(h("input",{type:"text", id:"planTit", placeholder:esComp?"Nombre de la competición (p. ej. Liga autonómica)":"Título (p. ej. Técnica a 18 m)", style:"width:100%; margin-bottom:8px"}));
+  card.append(h("textarea",{class:"area", id:"planNota", rows:"2", placeholder:esComp?"Lugar, hora, disciplina… (opcional)":"Notas del entreno (opcional)"}));
+  card.append(h("button",{class:"boton sec", style:"margin-top:10px", onclick:()=>{
+    const tit=($("#planTit").value||"").trim(), nota=($("#planNota").value||"").trim();
+    if(!tit && !nota){ toast("Escribe al menos un título"); return; }
+    DB.plan.lista.push({id:DB.plan.sig++, fecha, tipo:vista.planTipo, titulo:tit||(esComp?"Competición":"Entreno"), nota, hecho:false}); guardar(); toast(esComp?"Competición programada":"Entreno programado"); render();
+  }}, esComp?"Programar competición":"Programar entreno"));
+  return card;
+}
+// ── Retos e insignias ──
+function metricasLogros(){
+  const ses=sesionesCompletas();
+  let flechas=0, dieces=0, equis=0, patrulla=0; const discs=new Set();
+  ses.forEach(s=>{ const r=totalArquero(s.arqueros[0]); flechas+=r.f; equis+=r.x; discs.add(s.disciplina); if(s.arqueros.length>1) patrulla++;
+    s.arqueros[0].tandas.forEach(t=>t.forEach(v=>{ if(v==="10") dieces++; })); });
+  const medias10=ses.filter(s=>s.disciplina==="SALA"||s.disciplina==="AIRE_LIBRE").map(s=>totalArquero(s.arqueros[0])).filter(r=>r.f).map(r=>r.media);
+  const mejorMedia = medias10.length?Math.max(...medias10):0;
+  const orden=ses.slice().sort((a,b)=>a.fecha<b.fecha?-1:1); const best={}; let recordsBatidos=0;
+  orden.forEach(s=>{ const r=totalArquero(s.arqueros[0]); if(!r.f) return; const k=s.disciplina+"|"+s.modalidad;
+    if(best[k]==null) best[k]=r.t; else if(r.t>best[k]){ best[k]=r.t; recordsBatidos++; } });
+  return { flechas, tiradas:ses.length, entrenos:ses.filter(s=>s.tipoSesion!=="COMPETICION").length,
+    racha:rachaSemanas(), mejorMedia, equis, dieces, recordsBatidos,
+    objLogrados:DB.objetivos.lista.filter(o=>progresoObjetivo(o).pct>=1).length,
+    planHechos:DB.plan.lista.filter(p=>p.hecho).length, disciplinas:discs.size, patrulla };
+}
+function familiasLogros(mx){
+  return [
+    {id:"flechas", ic:"🎯", nom:"Flechas lanzadas", val:mx.flechas, niv:[100,250,500,1000,2500,5000,10000,25000,50000,100000]},
+    {id:"tiradas", ic:"📋", nom:"Tiradas completadas", val:mx.tiradas, niv:[1,5,10,25,50,100,250,500,1000]},
+    {id:"entrenos", ic:"🏹", nom:"Entrenamientos", val:mx.entrenos, niv:[5,10,25,50,100,200,400]},
+    {id:"racha", ic:"🔥", nom:"Semanas seguidas entrenando", val:mx.racha, niv:[2,4,8,12,26,52]},
+    {id:"media", ic:"🎖️", nom:"Mejor media (sala/aire libre)", val:mx.mejorMedia, niv:[7,8,8.5,9,9.2,9.5], dec:true},
+    {id:"records", ic:"📈", nom:"Récords batidos", val:mx.recordsBatidos, niv:[1,3,5,10,25,50]},
+    {id:"equis", ic:"⭐", nom:"Equis (X)", val:mx.equis, niv:[10,50,100,250,500,1000,2500]},
+    {id:"dieces", ic:"🔟", nom:"Dieces", val:mx.dieces, niv:[50,100,250,500,1000,2500,5000]},
+    {id:"obj", ic:"✅", nom:"Objetivos cumplidos", val:mx.objLogrados, niv:[1,3,5,10,20]},
+    {id:"plan", ic:"📅", nom:"Entrenos planificados hechos", val:mx.planHechos, niv:[1,5,10,25,50]},
+    {id:"disc", ic:"🧭", nom:"Disciplinas distintas", val:mx.disciplinas, niv:[2,3,4]},
+    {id:"patrulla", ic:"👥", nom:"Tiradas en patrulla", val:mx.patrulla, niv:[1,5,10,25]},
+  ];
+}
+function fmtNiv(f,n){ return f.dec? String(n).replace(".",",") : (n>=1000? (n/1000)+"k" : String(n)); }
+function paneLogros(m){
+  const mx=metricasLogros(); const fams=familiasLogros(mx);
+  // Insignia actual de cada familia = su nivel más alto conseguido (acumulativa: sustituye a los anteriores)
+  const ganadas=[]; fams.forEach(f=>{ const earned=f.niv.filter(n=>f.val>=n); if(earned.length) ganadas.push({f, n:Math.max(...earned)}); });
+  // Retos en curso: el siguiente nivel pendiente de cada familia, ordenados por cercanía
+  const retos=fams.map(f=>{ const next=f.niv.find(n=>f.val<n); return next?{f, next, pct:Math.min(1,f.val/next)}:null; })
+    .filter(Boolean).sort((a,b)=>b.pct-a.pct);
+  let conseguidasLvl=0, totalesLvl=0;
+  fams.forEach(f=>{ totalesLvl+=f.niv.length; conseguidasLvl+=f.niv.filter(n=>f.val>=n).length; });
+  m.append(h("div",{class:"resumen"},
+    caja(ganadas.length,"Insignias"), caja(retos.length,"Retos activos"), caja(Math.round(conseguidasLvl/totalesLvl*100)+"%","Progreso")));
+  m.append(h("div",{class:"fila", style:"margin:16px 0 8px"}, h("label",{style:"margin:0"},"Retos en curso")));
+  if(!retos.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "¡Has conseguido todas las insignias disponibles! 🏆")));
+  } else {
+    retos.forEach(r=>{
+      const card=h("div",{class:"tarjeta reto-card"});
+      card.append(h("div",{class:"fila", style:"justify-content:space-between; gap:8px"},
+        h("div",{style:"text-align:left; min-width:0"},
+          h("strong",{}, r.f.ic+" "+r.f.nom),
+          h("div",{class:"muted sub-mat"}, `${r.f.dec?r.f.val.toFixed(2):r.f.val} / ${fmtNiv(r.f,r.next)}`)),
+        h("span",{class:"reto-meta"}, fmtNiv(r.f,r.next))));
+      const barra=h("div",{class:"prog"}); barra.append(h("div",{class:"prog-in", style:`width:${Math.round(r.pct*100)}%`})); card.append(barra);
+      m.append(card);
+    });
+  }
+
+  // Insignias conseguidas
+  m.append(h("div",{class:"fila", style:"margin:18px 0 8px"}, h("label",{style:"margin:0"},"Insignias conseguidas")));
+  if(!ganadas.length){
+    m.append(h("div",{class:"vacio chico"}, h("div",{class:"muted"}, "Aún no has conseguido insignias. Registra tiradas y entrenos para empezar a ganarlas.")));
+  } else {
+    const grid=h("div",{class:"insignias"});
+    ganadas.forEach(g=>{
+      grid.append(h("div",{class:"insignia", title:g.f.nom}, h("div",{class:"ins-ic"}, g.f.ic),
+        h("div",{class:"ins-n"}, fmtNiv(g.f,g.n)), h("div",{class:"ins-t"}, g.f.nom)));
+    });
+    m.append(grid);
+  }
+  m.append(h("div",{class:"muted", style:"font-size:.8rem; margin-top:14px"},
+    "Las insignias se consiguen solas según vas tirando, entrenando y cumpliendo objetivos. Hay niveles para mucho tiempo: de las primeras 100 flechas hasta 100.000."));
+}
+function nuevoObjetivo(){ return { id:null, tipo:"MEDIA", disciplina:"SALA", modalidad:"TODAS", valor:"", periodo:"SEMANA", unidad:"TIRADAS" }; }
+const TIPOS_OBJ=[["MEDIA","Media"],["PUNTUACION","Puntuación"],["VOLUMEN","Volumen"],["CONSTANCIA","Constancia"]];
+function vistaObjetivo(){
+  const o=objDraft; if(!o){ ir({nombre:"objetivos"}); return h("main",{}); }
+  const m=h("main",{});
+  m.append(h("div",{class:"fila", style:"margin-bottom:10px"},
+    h("button",{class:"icono-btn", onclick:()=>{ objDraft=null; ir({nombre:"objetivos"}); }}, "‹"),
+    h("h2",{style:"margin:0; flex:1"}, o.id?"Editar objetivo":"Nuevo objetivo"),
+  ));
+  const c=h("div",{class:"tarjeta"});
+  c.append(campoSeg("Tipo", TIPOS_OBJ, o.tipo, v=>{ o.tipo=v; render(); }, true));
+  if(o.tipo==="MEDIA"||o.tipo==="PUNTUACION"){
+    const discs=[["TODAS","Todas"]].concat(Object.keys(DISC).map(k=>[k,DISC[k].nombre]));
+    c.append(campoSel("Disciplina", discs, o.disciplina, v=>{ o.disciplina=v; render(); }));
+    const mods=[["TODAS","Todas"]].concat(MODALIDADES);
+    c.append(campoSel("Modalidad", mods, o.modalidad, v=>{ o.modalidad=v; }));
+    c.append(campoTexto(o.tipo==="MEDIA"?"Media objetivo (p. ej. 9,0)":"Puntuación objetivo (total)", o.valor, v=>o.valor=v, "", "number"));
+  } else if(o.tipo==="VOLUMEN"){
+    c.append(campoSeg("Periodo", [["SEMANA","Semanal"],["MES","Mensual"]], o.periodo, v=>{ o.periodo=v; }));
+    c.append(campoSeg("Cuenta", [["TIRADAS","Tiradas"],["FLECHAS","Flechas"]], o.unidad, v=>{ o.unidad=v; }));
+    c.append(campoTexto("Cantidad objetivo", o.valor, v=>o.valor=v, "", "number"));
+  } else if(o.tipo==="CONSTANCIA"){
+    c.append(campoTexto("Días de entreno por semana", o.valor, v=>o.valor=v, "", "number"));
+  }
+  m.append(c);
+  // vista previa del progreso
+  if(o.valor){ const p=progresoObjetivo(o);
+    const pv=h("div",{class:"tarjeta"}, h("label",{},"Progreso actual"), h("div",{class:"muted sub-mat", style:"margin-bottom:8px"}, p.txt));
+    const barra=h("div",{class:"prog"}); barra.append(h("div",{class:"prog-in"+(p.pct>=1?" ok":""), style:`width:${Math.round(p.pct*100)}%`})); pv.append(barra);
+    m.append(pv);
+  }
+  m.append(h("button",{class:"boton", onclick:guardarObjetivo}, o.id?"Guardar cambios":"Crear objetivo"));
+  if(o.id){
+    m.append(h("button",{class:"boton peligro", style:"margin-top:10px", onclick:async()=>{
+      if(await confirmar("¿Eliminar este objetivo?")){ DB.objetivos.lista=DB.objetivos.lista.filter(x=>x.id!==o.id); guardar(); objDraft=null; ir({nombre:"objetivos"}); } }}, "Eliminar objetivo"));
+  }
+  return m;
+}
+function guardarObjetivo(){
+  const o=objDraft;
+  if(o.valor===""||o.valor==null||isNaN(Number(o.valor))||Number(o.valor)<=0){ toast("Indica un valor objetivo válido"); return; }
+  o.valor=Number(o.valor);
+  if(o.id){ const i=DB.objetivos.lista.findIndex(x=>x.id===o.id); if(i>=0) DB.objetivos.lista[i]=o; }
+  else { o.id=DB.objetivos.sig++; DB.objetivos.lista.push(o); }
+  guardar(); objDraft=null; toast("Objetivo guardado"); ir({nombre:"objetivos"});
+}
+function campoSel(lab, opciones, val, onchange){
+  return h("div",{class:"campo"}, h("label",{},lab),
+    h("select",{onchange:e=>{ onchange(e.target.value); }},
+      ...opciones.map(([v,t])=>h("option",{value:v, selected:(String(val)===String(v))||undefined}, t))));
+}
+
 /* ───────────────────────── Exportar / importar ───────────────────────── */
 function menuDatos(){
   modal("Copia de seguridad de tus tiradas", [
@@ -1510,7 +2007,7 @@ function importar(){
   const inp=document.createElement("input"); inp.type="file"; inp.accept="application/json,.json";
   inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const r=new FileReader();
     r.onload=async()=>{ try{ const d=JSON.parse(r.result); if(!d.sesiones) throw 0;
-      if(await confirmar("Esto reemplazará los datos actuales por los de la copia. ¿Continuar?")){ if(!d.material) d.material={arcos:[],juegos:[],sig:1}; DB=d; guardar(); vista={nombre:"inicio"}; render(); toast("Copia importada"); }
+      if(await confirmar("Esto reemplazará los datos actuales por los de la copia. ¿Continuar?")){ if(!d.material) d.material={arcos:[],juegos:[],sig:1}; if(!d.objetivos) d.objetivos={lista:[],sig:1}; if(!d.plan) d.plan={lista:[],sig:1}; DB=d; guardar(); vista={nombre:"inicio"}; render(); toast("Copia importada"); }
     }catch(e){ toast("Archivo no válido"); } };
     r.readAsText(f); };
   inp.click();
